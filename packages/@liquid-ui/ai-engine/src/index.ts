@@ -16,6 +16,17 @@ export { LocalAIEngine, initializeLocalAI, getLocalAI } from './local';
 // Edge AI Engine
 export { EdgeAIEngine, initializeEdgeAI, getEdgeAI } from './edge';
 
+// React Hooks
+export {
+  useAIInitialization,
+  useAI,
+  useTextClassification,
+  useFormValidation,
+  useAutocomplete,
+  useAccessibilityCheck,
+  useAIMetrics,
+} from './hooks';
+
 // Types
 export type {
   AITask,
