@@ -8,10 +8,10 @@ import { createResponse, createErrorResponse } from '../workers';
 import { runAI, MODELS } from '../ai';
 
 interface IncomingEvent {
-  id: string;
-  timestamp: number;
+  id?: string;
+  timestamp?: number;
   userId?: string;
-  sessionId: string;
+  sessionId?: string;
   event: string;
   component?: string;
   properties?: Record<string, unknown>;
@@ -53,25 +53,69 @@ export async function handleEventIngestion(
 }
 
 async function processEvent(
-  event: IncomingEvent,
+  incomingEvent: IncomingEvent,
   env: Env,
   ctx: ExecutionContext
 ): Promise<void> {
+  // Normalize event with defaults
+  const event = {
+    id: incomingEvent.id || crypto.randomUUID(),
+    timestamp: incomingEvent.timestamp || Date.now(),
+    userId: incomingEvent.userId,
+    sessionId: incomingEvent.sessionId || crypto.randomUUID(),
+    event: incomingEvent.event,
+    component: incomingEvent.component,
+    properties: incomingEvent.properties || {},
+  };
+
   // 1. Enrich event with AI classification
   let intent: string | undefined;
   let sentiment: string | undefined;
 
   try {
-    await runAI(env.AI, MODELS.TEXT_CLASSIFICATION, {
-      text: JSON.stringify(event.properties || {}),
+    // Generate a prompt for intent and sentiment analysis
+    const analysisPrompt = `Analyze this user event and provide:
+1. Intent (e.g., explore, purchase, configure, help, error)
+2. Sentiment (positive, neutral, negative)
+
+Event: ${event.event}
+Component: ${event.component || 'unknown'}
+Properties: ${JSON.stringify(event.properties || {})}
+
+Respond in JSON format: {"intent": "...", "sentiment": "..."}`;
+
+    const aiResult = await runAI(env.AI, MODELS.LLAMA_3_8B, {
+      messages: [
+        { role: 'system', content: 'You are an event analysis assistant. Analyze user events and respond with JSON.' },
+        { role: 'user', content: analysisPrompt }
+      ],
     });
 
-    // TODO: Parse AI result and extract intent/sentiment
-    intent = 'unknown';
-    sentiment = 'neutral';
+    // Parse AI response
+    if (aiResult && typeof aiResult === 'object') {
+      const response = (aiResult as any).response || (aiResult as any).text || '';
+
+      // Try to extract JSON from response
+      const jsonMatch = response.match(/\{[^}]+\}/);
+      if (jsonMatch) {
+        const parsed = JSON.parse(jsonMatch[0]);
+        intent = parsed.intent || 'unknown';
+        sentiment = parsed.sentiment || 'neutral';
+      } else {
+        // Fallback: simple keyword-based classification
+        intent = classifyIntent(event.event, event.properties);
+        sentiment = classifySentiment(event.event);
+      }
+    } else {
+      // Fallback classification
+      intent = classifyIntent(event.event, event.properties);
+      sentiment = classifySentiment(event.event);
+    }
   } catch (error) {
     console.error('AI enrichment failed:', error);
-    // Continue without AI enrichment
+    // Fallback to rule-based classification
+    intent = classifyIntent(event.event, event.properties);
+    sentiment = classifySentiment(event.event);
   }
 
   // 2. Write to Analytics Engine
@@ -128,4 +172,77 @@ async function checkTriggers(_event: IncomingEvent, _env: Env): Promise<void> {
   // - Error events
   // - Conversion events
   // - etc.
+}
+
+// Fallback classification functions
+
+function classifyIntent(eventName: string, _properties?: Record<string, unknown>): string {
+  const event = eventName.toLowerCase();
+
+  // Button/action intents
+  if (event.includes('click') || event.includes('tap') || event.includes('press')) {
+    if (event.includes('buy') || event.includes('purchase') || event.includes('checkout')) {
+      return 'purchase';
+    }
+    if (event.includes('help') || event.includes('support') || event.includes('contact')) {
+      return 'help';
+    }
+    if (event.includes('config') || event.includes('setting')) {
+      return 'configure';
+    }
+    return 'interact';
+  }
+
+  // Navigation intents
+  if (event.includes('view') || event.includes('open') || event.includes('navigate')) {
+    return 'explore';
+  }
+
+  // Error intents
+  if (event.includes('error') || event.includes('fail') || event.includes('crash')) {
+    return 'error';
+  }
+
+  // Form intents
+  if (event.includes('submit') || event.includes('form')) {
+    return 'submit';
+  }
+
+  // Search intents
+  if (event.includes('search') || event.includes('query')) {
+    return 'search';
+  }
+
+  return 'unknown';
+}
+
+function classifySentiment(eventName: string): string {
+  const event = eventName.toLowerCase();
+
+  // Negative sentiment indicators
+  if (
+    event.includes('error') ||
+    event.includes('fail') ||
+    event.includes('crash') ||
+    event.includes('cancel') ||
+    event.includes('close') ||
+    event.includes('exit')
+  ) {
+    return 'negative';
+  }
+
+  // Positive sentiment indicators
+  if (
+    event.includes('success') ||
+    event.includes('complete') ||
+    event.includes('purchase') ||
+    event.includes('buy') ||
+    event.includes('share') ||
+    event.includes('like') ||
+    event.includes('favorite')
+  ) {
+    return 'positive';
+  }
+
+  return 'neutral';
 }

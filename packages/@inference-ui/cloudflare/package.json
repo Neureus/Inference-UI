@@ -16,7 +16,8 @@
   "author": "Liquid UI Team",
   "license": "MIT",
   "dependencies": {
-    "@inference-ui/core": "^0.1.0"
+    "@inference-ui/core": "^0.1.0",
+    "graphql": "^16.9.0"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250115.0",

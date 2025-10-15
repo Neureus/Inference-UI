@@ -1,5 +1,5 @@
 /**
- * Velvet - Cloudflare Workers Main Entry Point
+ * Inference UI - Cloudflare Workers Main Entry Point
  * GraphQL API for AI-native UI library
  */
 
@@ -39,7 +39,7 @@ export default {
 
         case path === '/':
           return createResponse({
-            name: 'Velvet API',
+            name: 'Inference UI API',
             version: env.API_VERSION || 'v1',
             endpoints: {
               graphql: '/graphql',

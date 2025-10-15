@@ -2,9 +2,15 @@
  * GraphQL API Handler
  */
 
+import { graphql, buildSchema } from 'graphql';
 import type { Env } from '../types';
 import { createResponse, createErrorResponse } from '../workers';
 import { buildExecutionContext } from './context';
+import { schema } from './schema';
+import { resolvers } from './resolvers';
+
+// Build GraphQL schema
+const graphqlSchema = buildSchema(schema);
 
 export async function handleGraphQL(
   request: Request,
@@ -17,7 +23,7 @@ export async function handleGraphQL(
 
   try {
     const body = await request.json();
-    const { query } = body as {
+    const { query, variables, operationName } = body as {
       query: string;
       variables?: Record<string, unknown>;
       operationName?: string;
@@ -28,19 +34,22 @@ export async function handleGraphQL(
     }
 
     // Build execution context
-    buildExecutionContext(request, env, ctx);
-
-    // TODO: Implement GraphQL execution with graphql-js or similar
-    // For now, return a stub response
-    const result = {
-      data: {
-        __schema: {
-          queryType: { name: 'Query' },
-          mutationType: { name: 'Mutation' },
-          subscriptionType: null,
-        },
-      },
+    const context = {
+      ...buildExecutionContext(request, env, ctx),
+      env,
+      ctx,
+      userId: undefined, // TODO: Extract from auth headers
     };
+
+    // Execute GraphQL query
+    const result = await graphql({
+      schema: graphqlSchema,
+      source: query,
+      rootValue: resolvers,
+      contextValue: context,
+      variableValues: variables,
+      operationName,
+    });
 
     return createResponse(result);
   } catch (error) {
