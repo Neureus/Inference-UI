@@ -1,7 +1,7 @@
 {
-  "name": "velvet-docs",
+  "name": "inference-ui-docs",
   "version": "0.1.0",
-  "description": "Velvet documentation site built with Nextra 4",
+  "description": "Inference UI documentation site built with Nextra 4",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3001",

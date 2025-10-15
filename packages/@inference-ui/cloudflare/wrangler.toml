@@ -10,7 +10,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "inference-ui-db"
-database_id = "" # Will be filled after creating database with: wrangler d1 create inference-ui-db
+database_id = "4de74839-04b8-4b83-8550-578701999006"
 
 # R2 Storage
 [[r2_buckets]]
@@ -20,7 +20,7 @@ bucket_name = "inference-ui-assets"
 # KV Namespace
 [[kv_namespaces]]
 binding = "KV"
-id = "" # Will be filled after creating namespace with: wrangler kv:namespace create KV
+id = "bfbe2757ae154da691a261a3af4fad85"
 
 # Analytics Engine
 [[analytics_engine_datasets]]
@@ -43,17 +43,16 @@ workers_dev = false
 [env.production.vars]
 ENVIRONMENT = "production"
 
-# Durable Objects
-[[durable_objects.bindings]]
-name = "REALTIME"
-class_name = "RealtimeSession"
-script_name = "inference-ui-realtime"
+# Durable Objects - Commented out until RealtimeSession is deployed
+# [[durable_objects.bindings]]
+# name = "REALTIME"
+# class_name = "RealtimeSession"
+# script_name = "inference-ui-realtime"
 
 # Build Configuration
 [build]
 command = "npm run build"
-watch_dirs = ["src"]
 
-# Triggers for scheduled events
-[[triggers.crons]]
-cron = "0 * * * *" # Every hour
+# Triggers for scheduled events - Commented out for initial deployment
+# [[triggers.crons]]
+# cron = "0 * * * *" # Every hour
