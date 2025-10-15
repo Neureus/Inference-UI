@@ -2,9 +2,21 @@
  * EventQueue Tests
  */
 
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { EventQueue } from '../queue';
-import type { Event, EventConfig } from '../types';
+import { Event, EventConfig } from '../types';
+
+// Mock AsyncStorage
+jest.mock('@react-native-async-storage/async-storage', () => ({
+  __esModule: true,
+  default: {
+    setItem: jest.fn(() => Promise.resolve()),
+    getItem: jest.fn(() => Promise.resolve(null)),
+    removeItem: jest.fn(() => Promise.resolve()),
+    clear: jest.fn(() => Promise.resolve()),
+  },
+}));
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 describe('EventQueue', () => {
   let queue: EventQueue;

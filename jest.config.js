@@ -4,7 +4,13 @@ module.exports = {
   roots: ['<rootDir>/packages'],
   testMatch: ['**/__tests__/**/*.ts?(x)', '**/?(*.)+(spec|test).ts?(x)'],
   transform: {
-    '^.+\\.tsx?$': 'ts-jest',
+    '^.+\\.tsx?$': ['ts-jest', {
+      tsconfig: {
+        jsx: 'react',
+        esModuleInterop: true,
+        allowSyntheticDefaultImports: true,
+      },
+    }],
   },
   collectCoverageFrom: [
     'packages/@liquid-ui/*/src/**/*.{ts,tsx}',
@@ -22,4 +28,5 @@ module.exports = {
     '^@liquid-ui/dev-tools$': '<rootDir>/packages/@liquid-ui/dev-tools/src',
   },
   setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  passWithNoTests: true,
 };

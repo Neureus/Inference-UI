@@ -3,7 +3,7 @@
  */
 
 import { FlowEngine } from '../engine';
-import type { Flow, FlowStep } from '../types';
+import { Flow, FlowStep } from '../types';
 
 describe('FlowEngine', () => {
   let engine: FlowEngine;
