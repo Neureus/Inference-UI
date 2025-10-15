@@ -1,0 +1,475 @@
+# Documentation Site Deployment
+
+Deploy the Inference UI documentation site to Cloudflare Pages.
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+## Overview
+
+The Inference UI documentation site is built with:
+- **Nextra 3.0** - Next.js-based static site generator
+- **Next.js 14** - React framework
+- **Cloudflare Pages** - Static site hosting with edge functions
+
+## Prerequisites
+
+- Node.js 18+
+- Cloudflare account (use FinHub account)
+- Git repository
+
+## Local Development
+
+<Steps>
+
+### Install dependencies
+
+```bash
+cd docs
+npm install
+```
+
+### Start development server
+
+```bash
+npm run dev
+```
+
+The site will be available at `http://localhost:3001`.
+
+### Build locally
+
+```bash
+npm run build
+```
+
+This generates a static export in the `out/` directory.
+
+### Preview production build
+
+```bash
+npm run start
+```
+
+</Steps>
+
+## Deployment to Cloudflare Pages
+
+<Callout type="info">
+  Use the **FinHub** Cloudflare account for deployment.
+</Callout>
+
+### Method 1: Automatic Deployment (Recommended)
+
+<Steps>
+
+### Connect GitHub repository
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to **Workers & Pages**
+3. Click **Create application**
+4. Select **Pages** tab
+5. Click **Connect to Git**
+6. Select your Inference UI repository
+7. Click **Begin setup**
+
+### Configure build settings
+
+**Framework preset**: `Next.js (Static HTML Export)`
+
+**Build settings**:
+```bash
+Build command:    npm run build
+Build output dir: out
+Root directory:   docs
+```
+
+**Environment variables**:
+```bash
+NODE_VERSION=18
+```
+
+### Deploy
+
+Click **Save and Deploy**. Cloudflare will:
+1. Clone your repository
+2. Install dependencies
+3. Run the build
+4. Deploy to global edge network
+
+Your site will be available at:
+```
+https://velvet-docs.pages.dev
+```
+
+### Configure custom domain (Optional)
+
+1. Go to your Pages project
+2. Click **Custom domains**
+3. Click **Set up a custom domain**
+4. Enter: `docs.velvet.dev`
+5. Add DNS records as instructed
+6. Enable **Always Use HTTPS**
+
+</Steps>
+
+### Method 2: CLI Deployment
+
+<Steps>
+
+### Install Wrangler
+
+```bash
+npm install -g wrangler
+```
+
+### Login to Cloudflare
+
+```bash
+wrangler login
+```
+
+Make sure you're logged in with the **FinHub** account.
+
+### Build the site
+
+```bash
+cd docs
+npm run build
+```
+
+### Deploy with Wrangler
+
+```bash
+wrangler pages deploy out --project-name=velvet-docs
+```
+
+**First deployment**:
+```bash
+wrangler pages deploy out \
+  --project-name=velvet-docs \
+  --branch=main \
+  --commit-dirty=true
+```
+
+### View deployment
+
+```bash
+wrangler pages deployments list --project-name=velvet-docs
+```
+
+</Steps>
+
+### Method 3: Direct Upload
+
+<Steps>
+
+### Build the site
+
+```bash
+cd docs
+npm run build
+```
+
+### Upload via Dashboard
+
+1. Go to [Cloudflare Dashboard](https://dash.cloudflare.com/)
+2. Navigate to **Workers & Pages**
+3. Click **Create application** → **Pages** → **Upload assets**
+4. Select the `out/` directory
+5. Click **Deploy site**
+
+</Steps>
+
+## Configuration
+
+### Environment Variables
+
+Set in Cloudflare Pages dashboard or via `wrangler.toml`:
+
+```toml
+[env.production]
+BASE_PATH = ""
+NODE_ENV = "production"
+```
+
+### next.config.mjs
+
+The docs site is configured for static export:
+
+```javascript
+export default withNextra({
+  output: 'export',  // Static HTML export
+  images: {
+    unoptimized: true,  // Required for static export
+  },
+  basePath: process.env.BASE_PATH || '',
+  trailingSlash: true,  // Better for static hosting
+});
+```
+
+### Custom Headers
+
+Create `public/_headers` for custom headers:
+
+```
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+```
+
+### Custom Redirects
+
+Create `public/_redirects`:
+
+```
+# Redirect old URLs
+/old-docs/*  /docs/:splat  301
+
+# Redirect to HTTPS
+http://docs.velvet.dev/*  https://docs.velvet.dev/:splat  301
+```
+
+## CI/CD with GitHub Actions
+
+Create `.github/workflows/deploy-docs.yml`:
+
+```yaml
+name: Deploy Docs to Cloudflare Pages
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/deploy-docs.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy Documentation
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: docs/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd docs
+          npm ci
+
+      - name: Build documentation
+        run: |
+          cd docs
+          npm run build
+
+      - name: Deploy to Cloudflare Pages
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy docs/out --project-name=velvet-docs
+```
+
+Set these secrets in GitHub:
+- `CLOUDFLARE_API_TOKEN` - From Cloudflare Dashboard → My Profile → API Tokens
+- `CLOUDFLARE_ACCOUNT_ID` - From Cloudflare Dashboard URL
+
+## Performance Optimization
+
+### Image Optimization
+
+Since static export doesn't support Next.js Image optimization:
+
+```tsx
+// Use regular img tags or external image CDN
+<img src="/images/logo.png" alt="Inference UI Logo" />
+```
+
+### Code Splitting
+
+Nextra automatically splits code by page:
+
+```tsx
+// Each MDX page is a separate bundle
+// No additional configuration needed
+```
+
+### Caching Strategy
+
+Cloudflare Pages automatically caches static assets:
+
+- HTML: No cache (always fresh)
+- CSS/JS: Cached for 1 year (immutable)
+- Images: Cached for 1 year
+- Fonts: Cached for 1 year
+
+## Monitoring
+
+### Analytics
+
+Enable **Web Analytics** in Cloudflare Pages:
+
+1. Go to your Pages project
+2. Click **Analytics** tab
+3. Enable **Web Analytics**
+
+Track:
+- Page views
+- Visitors
+- Performance metrics
+- Error rates
+
+### Error Tracking
+
+Check deployment logs:
+
+```bash
+wrangler pages deployments list --project-name=velvet-docs
+wrangler pages deployments logs <DEPLOYMENT_ID>
+```
+
+### Lighthouse Scores
+
+Run Lighthouse audits:
+
+```bash
+npm install -g @lhci/cli
+lhci autorun --url=https://docs.velvet.dev
+```
+
+Target scores:
+- **Performance**: 95+
+- **Accessibility**: 100
+- **Best Practices**: 95+
+- **SEO**: 100
+
+## Troubleshooting
+
+### Build fails with "Module not found"
+
+**Solution**:
+```bash
+cd docs
+rm -rf node_modules .next
+npm install
+npm run build
+```
+
+### Images not showing
+
+**Problem**: Next.js Image optimization doesn't work with static export
+
+**Solution**: Use regular `<img>` tags or configure external image loader
+
+### Styles not applied
+
+**Problem**: CSS not loading
+
+**Solution**: Check `next.config.mjs` has correct `basePath` and `trailingSlash` settings
+
+### 404 errors on routes
+
+**Problem**: Client-side routing not working
+
+**Solution**: Ensure `trailingSlash: true` in `next.config.mjs` and add `_redirects` file
+
+### Slow build times
+
+**Solution**:
+1. Use `npm ci` instead of `npm install`
+2. Enable caching in CI/CD
+3. Split large MDX files into smaller pages
+
+## Best Practices
+
+### Content Structure
+
+```
+docs/pages/
+├── index.mdx           # Landing page
+├── _meta.json          # Root navigation
+├── docs/
+│   ├── _meta.json      # Docs navigation
+│   ├── *.mdx           # Doc pages
+│   └── images/         # Page-specific images
+└── public/
+    ├── images/         # Global images
+    └── _headers        # Custom headers
+```
+
+### Writing Documentation
+
+1. **Use MDX features**: Callouts, tabs, steps
+2. **Add metadata**: Frontmatter for SEO
+3. **Optimize images**: Compress before adding
+4. **Test locally**: Always preview before committing
+5. **Link checking**: Ensure all links work
+
+### SEO Optimization
+
+Add frontmatter to pages:
+
+```mdx
+---
+title: Getting Started with Inference UI
+description: Learn how to install and use Inference UI in your React Native app
+---
+```
+
+### Performance
+
+1. **Minimize page size**: Keep MDX files under 50KB
+2. **Optimize images**: Use WebP format, compress
+3. **Code examples**: Keep them concise
+4. **Lazy loading**: Use dynamic imports for heavy components
+
+## Cost
+
+Cloudflare Pages is **free** for:
+- Unlimited bandwidth
+- Unlimited requests
+- 500 builds/month
+- Built-in DDoS protection
+- Global CDN
+
+Paid features (optional):
+- **Pages Pro** ($20/mo): 5,000 builds/month, advanced analytics
+- **Enterprise**: Custom SLA, dedicated support
+
+## Next Steps
+
+- [Cloudflare Workers Deployment →](/deployment/cloudflare) - Deploy backend
+- [Production Checklist →](/deployment/production) - Pre-launch checklist
+- [Architecture →](/docs/architecture) - Understand the system
+
+## Resources
+
+- [Nextra Documentation](https://nextra.site)
+- [Cloudflare Pages Docs](https://developers.cloudflare.com/pages/)
+- [Next.js Static Export](https://nextjs.org/docs/app/building-your-application/deploying/static-exports)
+
+## Support
+
+Need help deploying the docs?
+
+1. Check troubleshooting section above
+2. Search [GitHub Issues](https://github.com/velvet-ui/velvet/issues)
+3. Ask in [Discussions](https://github.com/velvet-ui/velvet/discussions)
+4. Report deployment bugs

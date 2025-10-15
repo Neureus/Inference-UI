@@ -1,0 +1,27 @@
+{
+  "name": "inference-ui-demo-app",
+  "version": "1.0.0",
+  "description": "Velvet AI-Native UI Components Demo",
+  "main": "index.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web"
+  },
+  "dependencies": {
+    "@inference-ui/react-native": "workspace:*",
+    "@inference-ui/ai-engine": "workspace:*",
+    "@inference-ui/events": "workspace:*",
+    "@inference-ui/flows": "workspace:*",
+    "expo": "~54.0.13",
+    "expo-status-bar": "~3.0.8",
+    "react": "19.2.0",
+    "react-native": "0.82.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "^5.8.2"
+  },
+  "private": true
+}

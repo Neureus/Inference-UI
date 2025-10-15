@@ -1,0 +1,44 @@
+{
+  "name": "@inference-ui/react-native",
+  "version": "0.1.0",
+  "description": "Liquid Glass design system for React Native",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit",
+    "start": "expo start",
+    "ios": "expo start --ios",
+    "android": "expo start --android",
+    "web": "expo start --web"
+  },
+  "keywords": [
+    "react-native",
+    "expo",
+    "glassmorphism",
+    "design-system",
+    "ui",
+    "components"
+  ],
+  "author": "Liquid UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@inference-ui/core": "^0.1.0",
+    "expo": "~54.0.13",
+    "expo-blur": "~15.0.7",
+    "expo-glass-effect": "~0.1.4",
+    "expo-linear-gradient": "~15.0.7",
+    "expo-status-bar": "~3.0.8"
+  },
+  "peerDependencies": {
+    "react": "19.2.0",
+    "react-native": "0.82.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "^5.8.2"
+  }
+}

@@ -13,7 +13,7 @@ import {
   useCheckoutFlow,
   useFlowTracking,
   type Flow,
-} from '@velvet/flows';
+} from '@inference-ui/flows';
 
 /**
  * Example Flow Definitions

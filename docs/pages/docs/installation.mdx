@@ -1,0 +1,358 @@
+# Installation
+
+Complete installation guide for Inference UI across different platforms and package managers.
+
+import { Callout, Steps, Tabs } from 'nextra/components'
+
+## Package Overview
+
+Inference UI is organized as a monorepo with multiple packages:
+
+| Package | Description | Status |
+|---------|-------------|--------|
+| `@inference-ui/core` | Core utilities and types | ✅ Complete |
+| `@inference-ui/react-native` | React Native components + Inference UI Glass | ✅ Complete |
+| `@inference-ui/ai-engine` | Hybrid AI engine (local + edge) | ✅ Complete |
+| `@inference-ui/events` | Event intelligence platform | ✅ Complete |
+| `@inference-ui/flows` | UX flow composition engine | ✅ Complete |
+| `@inference-ui/cloudflare` | Cloudflare Workers backend | ✅ Complete |
+| `@inference-ui/react` | React web components | 🔄 Phase 3 |
+| `@inference-ui/vue` | Vue integration | 🔄 Phase 3 |
+
+## React Native Installation
+
+<Steps>
+
+### Install core packages
+
+<Tabs items={['npm', 'yarn', 'pnpm']}>
+  <Tabs.Tab>
+    ```bash
+    npm install @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    yarn add @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    pnpm add @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+### Install peer dependencies
+
+Inference UI requires these peer dependencies:
+
+```bash
+npm install \
+  expo-blur \
+  expo-linear-gradient \
+  react-native-fast-tflite \
+  @react-native-async-storage/async-storage
+```
+
+<Callout type="info">
+  If using **Expo SDK 54+**, these dependencies are included. Just run `npx expo install` after adding Inference UI packages.
+</Callout>
+
+### Configure for native platforms
+
+#### iOS Setup
+
+Install pods:
+
+```bash
+cd ios && pod install && cd ..
+```
+
+**Minimum iOS version**: 13.0
+
+Add to `ios/Podfile` if needed:
+
+```ruby
+platform :ios, '13.0'
+```
+
+#### Android Setup
+
+**Minimum Android SDK**: 24
+
+Add to `android/build.gradle`:
+
+```gradle
+minSdkVersion = 24
+compileSdkVersion = 34
+targetSdkVersion = 34
+```
+
+### Setup TypeScript (Recommended)
+
+Create or update `tsconfig.json`:
+
+```json
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@inference-ui/*": ["./node_modules/@inference-ui/*/src"]
+    }
+  }
+}
+```
+
+</Steps>
+
+## Expo Installation
+
+<Callout type="success">
+  **Recommended**: Expo provides the fastest way to get started with Inference UI.
+</Callout>
+
+<Steps>
+
+### Create new Expo app
+
+```bash
+npx create-expo-app my-velvet-app
+cd my-velvet-app
+```
+
+### Install Inference UI packages
+
+```bash
+npx expo install @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+```
+
+### Install dependencies automatically
+
+```bash
+npx expo install
+```
+
+Expo will automatically install all required peer dependencies.
+
+### Start development
+
+```bash
+npx expo start
+```
+
+</Steps>
+
+## Web (React) Installation
+
+<Callout type="warning">
+  React web support is coming in **Phase 3**. Currently only React Native is supported.
+</Callout>
+
+Future installation (Phase 3):
+
+```bash
+npm install @inference-ui/react @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+```
+
+## Monorepo Setup
+
+If you're working on Inference UI itself or using it in a monorepo:
+
+<Steps>
+
+### Clone the repository
+
+```bash
+git clone https://github.com/velvet-ui/velvet.git
+cd velvet
+```
+
+### Install dependencies
+
+```bash
+npm install
+```
+
+This installs all dependencies for all packages using npm workspaces.
+
+### Build packages
+
+```bash
+npm run build
+```
+
+Build all packages using Nx:
+
+```bash
+npx nx run-many --target=build --all
+```
+
+### Run tests
+
+```bash
+npm test
+```
+
+</Steps>
+
+## Verification
+
+After installation, verify everything is working:
+
+<Steps>
+
+### Check imports
+
+Create a test file:
+
+```tsx filename="test.tsx"
+import { GlassCard, AIInput } from '@inference-ui/react-native';
+import { useAIInitialization } from '@inference-ui/ai-engine';
+import { useEventTracker } from '@inference-ui/events';
+import { useFlow } from '@inference-ui/flows';
+
+console.log('✅ All imports successful!');
+```
+
+### Run type checking
+
+```bash
+npx tsc --noEmit
+```
+
+### Start your app
+
+<Tabs items={['Expo', 'React Native CLI']}>
+  <Tabs.Tab>
+    ```bash
+    npx expo start
+    ```
+  </Tabs.Tab>
+  <Tabs.Tab>
+    ```bash
+    # iOS
+    npx react-native run-ios
+
+    # Android
+    npx react-native run-android
+    ```
+  </Tabs.Tab>
+</Tabs>
+
+</Steps>
+
+## Troubleshooting
+
+### Module not found errors
+
+**Problem**: `Cannot find module '@inference-ui/react-native'`
+
+**Solutions**:
+1. Ensure packages are installed: `npm install`
+2. Clear cache: `rm -rf node_modules && npm install`
+3. For Expo: `npx expo start --clear`
+4. For RN CLI: `npx react-native start --reset-cache`
+
+### Peer dependency warnings
+
+**Problem**: Peer dependency warnings during installation
+
+**Solutions**:
+1. Install missing peer deps: `npm install <missing-package>`
+2. For Expo: `npx expo install` automatically resolves peer deps
+3. Use `--legacy-peer-deps` flag: `npm install --legacy-peer-deps`
+
+### iOS build errors
+
+**Problem**: Pod installation or build failures
+
+**Solutions**:
+1. Clean pod cache: `cd ios && pod deintegrate && pod install && cd ..`
+2. Clean build: In Xcode, Product → Clean Build Folder
+3. Update CocoaPods: `sudo gem install cocoapods`
+4. Check minimum iOS version in Podfile: `platform :ios, '13.0'`
+
+### Android build errors
+
+**Problem**: Gradle or build errors
+
+**Solutions**:
+1. Clean build: `cd android && ./gradlew clean && cd ..`
+2. Check minSdkVersion ≥ 24
+3. Update Gradle: Check `android/gradle/wrapper/gradle-wrapper.properties`
+4. Clear cache: `cd android && ./gradlew --stop && cd ..`
+
+### TypeScript errors
+
+**Problem**: Type errors or `any` types
+
+**Solutions**:
+1. Install type definitions: `npm install -D @types/react @types/react-native`
+2. Update `tsconfig.json` paths configuration
+3. Restart TypeScript server in your IDE
+
+### Import errors with aliases
+
+**Problem**: Path aliases not resolving
+
+**Solutions**:
+1. Update `tsconfig.json`:
+   ```json
+   {
+     "compilerOptions": {
+       "paths": {
+         "@inference-ui/*": ["./node_modules/@inference-ui/*/src"]
+       }
+     }
+   }
+   ```
+2. For Metro bundler, update `metro.config.js`
+3. Restart dev server
+
+## Platform-Specific Notes
+
+### iOS
+
+- **Minimum version**: iOS 13.0
+- **Native glass effects**: Requires iOS 13+ for `UIVisualEffectView`
+- **TensorFlow Lite**: Requires iOS 12+
+- **Permissions**: No special permissions required
+
+### Android
+
+- **Minimum SDK**: 24 (Android 7.0)
+- **Blur effects**: Uses `@react-native-community/blur`
+- **TensorFlow Lite**: Requires Android 5.0+
+- **Permissions**: No special permissions required
+
+### Web (Future)
+
+- **Browser support**: Modern browsers (Chrome 90+, Firefox 88+, Safari 14+)
+- **WebAssembly**: Required for local AI
+- **Service Workers**: Optional for offline support
+
+## Next Steps
+
+- [Quick Start →](/docs/quickstart) - Build your first Inference UI app
+- [Architecture →](/docs/architecture) - Understand the system design
+- [Components →](/docs/components) - Explore available components
+- [AI Engine →](/docs/ai-engine) - Configure hybrid AI
+
+## Need Help?
+
+Can't get Inference UI installed? Here's how to get help:
+
+1. **Check this guide** - Review troubleshooting section above
+2. **Search issues** - [GitHub Issues](https://github.com/velvet-ui/velvet/issues)
+3. **Ask the community** - [GitHub Discussions](https://github.com/velvet-ui/velvet/discussions)
+4. **Report a bug** - [File an issue](https://github.com/velvet-ui/velvet/issues/new)
+
+Include these details when asking for help:
+- Node.js version (`node -v`)
+- npm/yarn version (`npm -v` or `yarn -v`)
+- React Native version
+- Expo SDK version (if using Expo)
+- Operating system
+- Full error message

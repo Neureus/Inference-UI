@@ -1,0 +1,517 @@
+# Architecture
+
+Deep dive into Inference UI's architecture, design decisions, and how everything fits together.
+
+import { Callout } from 'nextra/components'
+
+## Overview
+
+Inference UI is built on three core architectural principles:
+
+1. **AI-Native** - Intelligence integrated at the component layer, not bolted on
+2. **Privacy-First** - Local AI processing by default, cloud as enhancement
+3. **Edge-First** - Serverless architecture with Cloudflare Workers at 180+ locations
+
+## System Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        Mobile/Web App                            │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │              React Native / React / Vue                    │ │
+│  │  ┌──────────────────────────────────────────────────────┐  │ │
+│  │  │           @inference-ui/react-native                        │  │ │
+│  │  │  • GlassCard, GlassButton, GlassText                 │  │ │
+│  │  │  • AIInput, AIButton (AI-powered components)          │  │ │
+│  │  │  • Inference UI Glass Design System                         │  │ │
+│  │  └──────────────────────────────────────────────────────┘  │ │
+│  │                                                              │ │
+│  │  ┌─────────────────┐  ┌─────────────┐  ┌──────────────┐   │ │
+│  │  │ @inference-ui/       │  │ @inference-ui/    │  │ @inference-ui/     │   │ │
+│  │  │ ai-engine       │  │ events      │  │ flows        │   │ │
+│  │  │ • Local AI      │  │ • Capture   │  │ • Engine     │   │ │
+│  │  │ • Edge AI       │  │ • Queue     │  │ • Templates  │   │ │
+│  │  │ • Routing       │  │ • Batch     │  │ • Analytics  │   │ │
+│  │  └─────────────────┘  └─────────────┘  └──────────────┘   │ │
+│  └──────────────────────────────────────────────────────────┘  │ │
+└─────────────────────────────────────────────────────────────────┘
+                              │
+                              │ HTTPS
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│              Cloudflare Edge (180+ locations)                    │
+│  ┌────────────────────────────────────────────────────────────┐ │
+│  │                  Cloudflare Workers                         │ │
+│  │  • GraphQL API                                              │ │
+│  │  • Event Ingestion + AI Enrichment                          │ │
+│  │  • Authentication & Rate Limiting                           │ │
+│  └────────────────────────────────────────────────────────────┘ │
+│                              │                                   │
+│         ┌──────────┬────────┼────────┬────────────┐            │
+│         ▼          ▼        ▼        ▼            ▼            │
+│  ┌──────────┐ ┌──────┐ ┌───────┐ ┌─────────┐ ┌──────────┐    │
+│  │ Workers  │ │  D1  │ │   R2  │ │   KV    │ │Analytics │    │
+│  │   AI     │ │ (DB) │ │(Store)│ │ (Cache) │ │  Engine  │    │
+│  └──────────┘ └──────┘ └───────┘ └─────────┘ └──────────┘    │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+## Monorepo Structure
+
+Inference UI uses a monorepo architecture with npm workspaces and Nx:
+
+```
+velvet/
+├── packages/
+│   └── @inference-ui/
+│       ├── core/              # Shared utilities & types
+│       ├── react-native/      # RN components + Inference UI Glass
+│       ├── ai-engine/         # Hybrid AI (local + edge)
+│       ├── events/            # Event intelligence
+│       ├── flows/             # UX flow engine
+│       ├── cloudflare/        # Workers backend
+│       └── dev-tools/         # Developer utilities
+├── examples/                  # Example code
+├── inference-ui-demo-app/          # Standalone demo app
+├── docs/                      # Nextra documentation site
+├── package.json              # Root workspace
+├── nx.json                   # Nx configuration
+└── tsconfig.base.json        # Shared TypeScript config
+```
+
+### Package Dependencies
+
+```
+@inference-ui/react-native
+  ├─> @inference-ui/core
+  ├─> @inference-ui/ai-engine
+  ├─> @inference-ui/events
+  └─> @inference-ui/flows
+
+@inference-ui/ai-engine
+  └─> @inference-ui/core
+
+@inference-ui/events
+  └─> @inference-ui/core
+
+@inference-ui/flows
+  └─> @inference-ui/core
+
+@inference-ui/cloudflare
+  └─> (independent - runs on Workers)
+```
+
+## Hybrid AI Architecture
+
+Inference UI's unique hybrid AI architecture routes AI tasks intelligently between local and edge processing.
+
+### Decision Router
+
+```typescript
+function routeAIRequest(task: AITask): 'local' | 'edge' {
+  // Privacy-first: sensitive data stays local
+  if (task.containsSensitiveData) return 'local';
+
+  // Offline mode: force local
+  if (!navigator.onLine) return 'local';
+
+  // Ultra-low latency requirements
+  if (task.requiresLatency < 100) return 'local';
+
+  // Complex tasks need edge AI
+  if (task.complexity === 'high') return 'edge';
+
+  // Simple tasks run locally
+  if (task.type in LOCAL_MODELS) return 'local';
+
+  // Default to local for privacy
+  return 'local';
+}
+```
+
+### Local AI Engine (TFLite)
+
+**Technology**: TensorFlow Lite via `react-native-fast-tflite`
+
+**Models** (~20MB total):
+- Text classification (5MB)
+- Form validation (4MB)
+- Autocomplete (6MB)
+- Accessibility check (5MB)
+
+**Characteristics**:
+- **Latency**: 20-100ms
+- **Cost**: $0 (runs on device)
+- **Privacy**: 100% (data never leaves device)
+- **Offline**: ✅ Fully supported
+
+**Use Cases**:
+- Email/phone validation
+- Real-time text classification
+- Autocomplete suggestions
+- Accessibility checks
+- Offline-first features
+
+### Edge AI Engine (Workers AI)
+
+**Technology**: Cloudflare Workers AI (GPU-powered at edge)
+
+**Available Models** (50+):
+- Llama 3.1 8B Instruct
+- Mistral 7B Instruct
+- DistilBERT (classification)
+- Stable Diffusion XL
+- Whisper (speech-to-text)
+
+**Characteristics**:
+- **Latency**: 200-500ms (from nearest edge)
+- **Cost**: ~$0.011 per 1K neurons
+- **Privacy**: E2E encrypted in transit
+- **Offline**: ❌ Requires internet
+
+**Use Cases**:
+- Advanced LLM responses
+- Text-to-image generation
+- Speech recognition
+- Complex NLP tasks
+- Latest data queries
+
+### Automatic Fallback
+
+If edge AI fails, Inference UI automatically falls back to local:
+
+```typescript
+async function executeWithFallback(task: AITask) {
+  try {
+    // Try edge first
+    return await executeEdge(task);
+  } catch (error) {
+    console.warn('Edge AI failed, falling back to local:', error);
+    // Fallback to local
+    return await executeLocal(task);
+  }
+}
+```
+
+## Event Intelligence Platform
+
+### Event Flow
+
+```
+1. Component Event → Auto-captured by Inference UI
+                     ↓
+2. Local Queue → AsyncStorage (encrypted, batched)
+                     ↓
+3. Batch Upload → Every 20s or 50 events
+                     ↓
+4. Cloudflare Worker → Receives batch
+                     ↓
+5. Workers AI → Enrichment (intent, sentiment)
+                     ↓
+6. Triple Write:
+   ├─> Analytics Engine (time-series)
+   ├─> D1 Database (queryable)
+   └─> Durable Objects (real-time)
+```
+
+### Event Capture
+
+Events are captured automatically at the component layer:
+
+```typescript
+// AIButton automatically tracks press events
+<AIButton
+  title="Submit"
+  onPress={handleSubmit}
+  // No manual tracking needed!
+/>
+
+// Behind the scenes:
+function AIButton({ onPress, ...props }) {
+  const track = useEventTracker();
+
+  const handlePress = () => {
+    // Auto-track event
+    track('button_press', {
+      button: props.title,
+      timestamp: Date.now(),
+      ...props.eventProperties,
+    });
+
+    // Execute user's handler
+    onPress();
+  };
+
+  return <Pressable onPress={handlePress} {...props} />;
+}
+```
+
+### Event Batching
+
+Events are batched for efficiency:
+
+```typescript
+interface EventQueueConfig {
+  batchSize: number;        // Default: 50 events
+  batchInterval: number;    // Default: 20000ms (20s)
+  maxQueueSize: number;     // Default: 1000 events
+  retryAttempts: number;    // Default: 3
+  retryDelay: number;       // Default: 1000ms
+}
+```
+
+## Flow Engine
+
+Flows enable declarative multi-step UX patterns.
+
+### Flow Definition
+
+```typescript
+const OnboardingFlow: Flow = {
+  id: 'onboarding',
+  name: 'User Onboarding',
+  initialStep: 'welcome',
+  steps: [
+    {
+      id: 'welcome',
+      component: 'WelcomeScreen',
+      next: 'profile',
+    },
+    {
+      id: 'profile',
+      component: 'ProfileSetup',
+      next: (data) => data.hasPhoto ? 'interests' : 'photo',
+    },
+    {
+      id: 'photo',
+      component: 'PhotoUpload',
+      next: 'interests',
+    },
+    {
+      id: 'interests',
+      component: 'InterestSelection',
+      next: 'complete',
+    },
+    {
+      id: 'complete',
+      component: 'OnboardingComplete',
+    },
+  ],
+};
+```
+
+### Flow Execution
+
+```typescript
+// In your component
+const { start, next, back, progress } = useFlow();
+
+// Start the flow
+start(OnboardingFlow);
+
+// Navigate
+next(); // Move to next step
+back(); // Go back one step
+
+// Track progress
+console.log(`Progress: ${progress}%`);
+```
+
+## Cloudflare Workers Backend
+
+### GraphQL API
+
+Inference UI uses GraphQL for all backend communication:
+
+```graphql
+type Query {
+  me: User
+  flows: [Flow!]!
+  flow(id: ID!): Flow
+  flowAnalytics(flowId: ID!, range: DateRange!): FlowAnalytics
+}
+
+type Mutation {
+  createFlow(input: CreateFlowInput!): Flow!
+  updateFlow(id: ID!, input: UpdateFlowInput!): Flow!
+  deleteFlow(id: ID!): Boolean!
+  trackEvent(input: TrackEventInput!): Boolean!
+}
+```
+
+### Event Ingestion
+
+```typescript
+// Worker receives batch of events
+export default {
+  async fetch(request: Request, env: Env) {
+    const events = await request.json();
+
+    // Parallel processing
+    await Promise.all([
+      // 1. AI enrichment
+      enrichWithAI(events, env.AI),
+
+      // 2. Write to Analytics Engine
+      writeToAnalytics(events, env.ANALYTICS),
+
+      // 3. Store recent events in D1
+      storeInD1(events, env.DB),
+
+      // 4. Check real-time triggers
+      checkTriggers(events, env.REALTIME),
+    ]);
+
+    return new Response('OK');
+  },
+};
+```
+
+### Data Storage
+
+**D1 Database** - SQLite at edge:
+```sql
+-- Users table
+CREATE TABLE users (
+  id TEXT PRIMARY KEY,
+  email TEXT UNIQUE,
+  tier TEXT CHECK(tier IN ('free', 'developer', 'business', 'enterprise')),
+  created_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+```
+
+**Analytics Engine** - Time-series events:
+```typescript
+env.ANALYTICS.writeDataPoint({
+  indexes: ['user_123', 'session_456'],    // Queryable
+  blobs: ['button_click', 'AIButton'],     // Metadata
+  doubles: [Date.now(), 1.0],              // Metrics
+});
+```
+
+**KV Cache** - AI results:
+```typescript
+// Cache AI inference for 60s
+await env.KV.put('ai:intent:' + text, result, {
+  expirationTtl: 60,
+});
+```
+
+**R2 Storage** - Assets and exports:
+```typescript
+// Store AI models
+await env.R2.put('models/validation-v2.tflite', modelBuffer);
+
+// Store user exports
+await env.R2.put('exports/user_123.json', jsonData);
+```
+
+## Design System: Inference UI Glass
+
+### Native Glass Effects
+
+**iOS**: Uses `UIVisualEffectView` for native performance
+**Android/Web**: Uses `BlurView` with cross-platform support
+
+```typescript
+// Automatic platform detection
+function GlassView({ children, blurIntensity = 50 }) {
+  if (Platform.OS === 'ios' && Platform.Version >= 26) {
+    return <ExpoGlassView {...props}>{children}</ExpoGlassView>;
+  } else {
+    return <BlurView {...props}>{children}</BlurView>;
+  }
+}
+```
+
+### Theme System
+
+```typescript
+const theme = {
+  colors: {
+    glass: {
+      light: 'rgba(255, 255, 255, 0.15)',
+      medium: 'rgba(255, 255, 255, 0.25)',
+      strong: 'rgba(255, 255, 255, 0.35)',
+    },
+    flat: {
+      primary: '#667eea',
+      secondary: '#764ba2',
+      success: '#22c55e',
+      error: '#ef4444',
+    },
+  },
+  spacing: [0, 4, 8, 12, 16, 24, 32, 48, 64, 96],
+  typography: {
+    sizes: {
+      xs: 12,
+      sm: 14,
+      md: 16,
+      lg: 18,
+      xl: 20,
+      '2xl': 24,
+      '3xl': 30,
+    },
+  },
+};
+```
+
+## Performance Characteristics
+
+### Component Rendering
+- **First render**: < 50ms
+- **Re-renders**: < 16ms (60 FPS)
+- **Memory overhead**: < 10MB per component
+
+### AI Processing
+- **Local inference**: 20-100ms
+- **Edge inference**: 200-500ms (with internet)
+- **Model loading**: < 500ms (cached after first load)
+
+### Event Tracking
+- **Capture overhead**: < 1ms per event
+- **Queue writes**: < 5ms (AsyncStorage)
+- **Batch upload**: < 100ms per batch
+
+### Network
+- **GraphQL queries**: < 50ms (from nearest edge)
+- **Event ingestion**: < 100ms (batch)
+- **AI enrichment**: < 200ms (Workers AI)
+
+## Scalability
+
+### Client-Side
+- **Local AI**: Scales to millions of devices (no server cost)
+- **Event queue**: 1,000 events max (auto-flush)
+- **Memory usage**: < 50MB total
+
+### Server-Side (Cloudflare)
+- **Workers**: Auto-scales 0 to millions of requests
+- **D1**: 10GB database, millions of queries/day
+- **Analytics Engine**: Unlimited events (pay per write)
+- **Global edge**: 180+ locations, < 50ms latency worldwide
+
+## Security
+
+### Data Encryption
+- **In transit**: TLS 1.3
+- **At rest**: Encrypted D1, R2, KV
+- **Local storage**: Encrypted AsyncStorage
+
+### Authentication
+- **API keys**: Stored in D1, cached in KV
+- **JWT tokens**: Signed with secret
+- **Rate limiting**: Per-user, per-endpoint
+
+### Privacy
+- **Local-first**: Sensitive data processed locally
+- **Minimal data collection**: Only essential events
+- **GDPR compliant**: User data deletion support
+- **Regional routing**: Data stays in user's region
+
+## Next Steps
+
+- [AI Engine →](/docs/ai-engine) - Deep dive into hybrid AI
+- [Events →](/docs/events) - Event intelligence platform
+- [Flows →](/docs/flows) - UX flow composition
+- [Cloudflare Setup →](/docs/cloudflare-setup) - Backend deployment

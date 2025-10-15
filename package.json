@@ -1,10 +1,10 @@
 {
-  "name": "@velvet/monorepo",
+  "name": "@inference-ui/monorepo",
   "version": "0.1.0",
   "private": true,
   "description": "AI-Native UI Component Library - Monorepo",
   "workspaces": [
-    "packages/@velvet/*"
+    "packages/@inference-ui/*"
   ],
   "scripts": {
     "build": "nx run-many --target=build --all",
@@ -14,9 +14,9 @@
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
     "typecheck": "nx run-many --target=typecheck --all",
     "clean": "nx reset && rm -rf node_modules packages/*/node_modules packages/*/dist",
-    "dev:react-native": "nx run @velvet/react-native:start",
-    "dev:cloudflare": "nx run @velvet/cloudflare:dev",
-    "deploy:cloudflare": "nx run @velvet/cloudflare:deploy",
+    "dev:react-native": "nx run @inference-ui/react-native:start",
+    "dev:cloudflare": "nx run @inference-ui/cloudflare:dev",
+    "deploy:cloudflare": "nx run @inference-ui/cloudflare:deploy",
     "prepare": "husky install"
   },
   "devDependencies": {

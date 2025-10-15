@@ -1,0 +1,26 @@
+{
+  "name": "@inference-ui/cloudflare",
+  "version": "0.1.0",
+  "description": "Cloudflare Workers, D1, R2, and Workers AI integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["cloudflare", "workers", "d1", "r2", "workers-ai"],
+  "author": "Liquid UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@inference-ui/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250115.0",
+    "wrangler": "^4.43.0",
+    "typescript": "^5.8.2"
+  }
+}

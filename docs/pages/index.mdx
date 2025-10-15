@@ -1,0 +1,226 @@
+---
+title: Inference UI - AI-Native UI Components
+---
+
+import { Callout } from 'nextra/components'
+
+# Inference UI
+
+**AI-Native UI component library for React Native and Web**
+
+Inference UI is the world's first AI-native cross-platform UI component library that integrates intelligence into every component. Built with privacy-first principles, it combines local on-device AI with optional edge compute for advanced features.
+
+<Callout type="info" emoji="🚀">
+  Inference UI is currently in **Phase 1 development**. Join us in building the future of AI-native UI!
+</Callout>
+
+## Features
+
+### 🤖 AI-Native Components
+Every component includes built-in AI capabilities:
+- **Smart validation** with real-time feedback
+- **Intelligent autocomplete** powered by local models
+- **Adaptive UX** that learns from user behavior
+- **Accessibility suggestions** automatically applied
+
+### 🎨 Inference UI Glass Design System
+Beautiful glassmorphism design system with:
+- Native iOS glass effects via `UIVisualEffectView`
+- Cross-platform blur support
+- 7 glass style presets
+- Complete theming system
+- Gradient backgrounds
+
+### 📊 Built-in Event Intelligence
+Zero-configuration analytics platform:
+- Automatic event capture at component layer
+- AI-powered event enrichment
+- Privacy-first local processing
+- Cloudflare Workers backend integration
+
+### 🔄 Flow Engine
+UX flow composition for multi-step experiences:
+- Declarative flow definitions
+- Conditional routing
+- Progress tracking
+- Pre-built flow templates
+
+### 🌐 Cross-Platform
+Unified components across platforms:
+- **React Native** (iOS, Android, Web)
+- **React** (coming soon)
+- **Vue** (coming soon)
+
+### 🔒 Privacy-First
+- **Local AI processing** by default
+- **On-device models** (~20MB total)
+- **Optional cloud enhancement** via Cloudflare Workers AI
+- **GDPR/CCPA compliant** by design
+
+## Architecture
+
+### Hybrid AI Engine
+Intelligent routing between local TFLite and Cloudflare Workers AI:
+
+```
+┌─────────────────────────────────────────┐
+│         Hybrid AI Router                │
+│  (Intelligent routing decisions)        │
+└───────────┬─────────────────────┬───────┘
+            │                     │
+    ┌───────▼────────┐    ┌──────▼────────┐
+    │   Local AI     │    │   Edge AI     │
+    │  (TFLite)      │    │ (Workers AI)  │
+    │                │    │               │
+    │ • Privacy      │    │ • Advanced    │
+    │ • Speed        │    │ • Latest data │
+    │ • Offline      │    │ • 50+ models  │
+    │ • Free         │    │ • GPU-powered │
+    └────────────────┘    └───────────────┘
+```
+
+### Cloudflare Edge Platform
+Complete serverless infrastructure:
+- **Workers** - Edge compute (180+ locations)
+- **Workers AI** - GPU inference at edge
+- **D1** - SQLite database at edge
+- **R2** - S3-compatible storage (no egress fees)
+- **KV** - Global key-value cache
+- **Analytics Engine** - Time-series event data
+
+## Quick Start
+
+```bash
+# Install dependencies
+npm install @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+
+# Wrap your app
+import { EventProvider } from '@inference-ui/events';
+import { FlowProvider } from '@inference-ui/flows';
+
+export default function App() {
+  return (
+    <EventProvider>
+      <FlowProvider>
+        <YourApp />
+      </FlowProvider>
+    </EventProvider>
+  );
+}
+
+# Use AI-powered components
+import { AIInput, AIButton, GlassCard } from '@inference-ui/react-native';
+
+function MyComponent() {
+  return (
+    <GlassCard glassStyle="medium">
+      <AIInput
+        name="email"
+        enableValidation={true}
+        enableAutocomplete={true}
+        placeholder="your@email.com"
+      />
+      <AIButton
+        title="Submit"
+        onPress={handleSubmit}
+        variant="primary"
+      />
+    </GlassCard>
+  );
+}
+```
+
+## What Makes Inference UI Different?
+
+### Traditional UI Libraries
+- Components are static and dumb
+- Validation requires manual setup
+- Analytics bolted on as afterthought
+- Developer writes all the intelligence
+
+### Inference UI
+- **Components have built-in intelligence**
+- **Zero-config AI validation and autocomplete**
+- **Analytics integrated at component layer**
+- **AI assists both user and developer**
+
+## Project Status
+
+Inference UI is currently in **Phase 1 Development** (Months 1-6):
+
+- ✅ Monorepo architecture with 7 packages
+- ✅ Inference UI Glass design system
+- ✅ Cloudflare Workers infrastructure
+- ✅ Hybrid AI engine (local + edge)
+- ✅ Event intelligence platform
+- ✅ Flow engine with templates
+- ✅ Test infrastructure (27 passing tests)
+- ✅ Demo applications
+- 🔄 React hooks expansion
+- 🔄 Component library (20+ components)
+- 🔄 Production deployment
+
+**Target**: 10K+ GitHub stars, 100K+ weekly downloads by Year 3
+
+## Business Model
+
+### Open Source (Free)
+- Core library with basic AI features
+- Local processing
+- Essential templates
+- Community support
+
+### Developer Tier ($29/mo)
+- Enhanced AI models
+- Advanced code generation
+- Premium integrations
+- Priority support
+
+### Business Tier ($199/mo)
+- Advanced analytics
+- Real-time optimization
+- Unlimited events
+- SLA
+
+### Enterprise (Custom)
+- Private cloud
+- On-premises deployment
+- Custom AI models
+- Compliance features
+
+## Economics
+
+With Cloudflare's edge architecture, Inference UI achieves **98%+ gross margins**:
+
+- **Infrastructure cost**: ~$15-30/month for 30M events
+- **No egress fees** (R2 storage)
+- **Edge compute efficiency** (180+ locations)
+- **80% local AI** (zero cost)
+
+Traditional cloud infrastructure would cost $60-80/month per customer (60-70% margins).
+
+## Contributing
+
+Inference UI is open source and contributions are welcome!
+
+- **GitHub**: [github.com/velvet-ui/velvet](https://github.com/velvet-ui/velvet)
+- **Issues**: Report bugs and request features
+- **Discussions**: Join the community
+- **Pull Requests**: Submit improvements
+
+## Learn More
+
+- [Getting Started](/docs/getting-started) - Install and setup guide
+- [Components](/docs/components) - Complete component reference
+- [AI Engine](/docs/ai-engine) - Hybrid AI architecture
+- [Events](/docs/events) - Event intelligence platform
+- [Flows](/docs/flows) - UX flow composition
+- [Deployment](/docs/deployment) - Cloudflare Workers setup
+
+## License
+
+MIT © 2025 Inference UI
+
+---
+
+**Built with**: React Native • Cloudflare Workers • TensorFlow Lite • Expo • TypeScript

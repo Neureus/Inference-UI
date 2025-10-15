@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**Velvet** is an AI-native cross-platform UI component library that integrates AI capabilities into every component. The project combines intelligent, adaptive user interfaces with built-in event intelligence and is optimized for AI-assisted development workflows.
+**Inference UI** is an AI-native cross-platform UI component library that integrates AI capabilities into every component. The project combines intelligent, adaptive user interfaces with built-in event intelligence and is optimized for AI-assisted development workflows.
 
 ### Core Vision
 
@@ -25,7 +25,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Technology Stack
 
 ### Current Status
-**Phase 1 Implementation Started**: Velvet Glass design system prototype has been implemented.
+**Phase 1 Implementation Started**: Inference UI Glass design system prototype has been implemented.
 
 - **Completed**: Expo-based glassmorphism design system with React Native
 - **Location**: `liquid-glass-app/` directory
@@ -89,29 +89,29 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 packages/
-├── @velvet/core                - Platform-agnostic logic
-├── @velvet/react-native        - React Native components (PRIMARY)
-├── @velvet/react               - React web (Phase 3)
-├── @velvet/vue                 - Vue integration (Phase 3)
-├── @velvet/ai-engine            - AI processing layer
+├── @inference-ui/core                - Platform-agnostic logic
+├── @inference-ui/react-native        - React Native components (PRIMARY)
+├── @inference-ui/react               - React web (Phase 3)
+├── @inference-ui/vue                 - Vue integration (Phase 3)
+├── @inference-ui/ai-engine            - AI processing layer
 │   ├── local/                     - TFLite on-device AI
 │   ├── edge/                      - Cloudflare Workers AI
 │   └── hybrid/                    - Local vs Edge routing
-├── @velvet/events              - Event intelligence
+├── @inference-ui/events              - Event intelligence
 │   ├── capture/                   - Auto-capture middleware
 │   ├── enrichment/                - AI event enrichment
 │   ├── storage/                   - Local queue (AsyncStorage)
 │   └── sinks/                     - Output adapters
-├── @velvet/flows               - UX flow engine
+├── @inference-ui/flows               - UX flow engine
 │   ├── engine/                    - Flow orchestration
 │   ├── templates/                 - Pre-built flows
 │   └── analytics/                 - Flow metrics
-├── @velvet/cloudflare          - Cloudflare integrations
+├── @inference-ui/cloudflare          - Cloudflare integrations
 │   ├── workers/                   - Edge Workers
 │   ├── api/                       - GraphQL API
 │   ├── analytics/                 - Analytics Engine integration
 │   └── storage/                   - D1, R2, KV, Durable Objects
-└── @velvet/dev-tools           - Developer tooling
+└── @inference-ui/dev-tools           - Developer tooling
     ├── cli/                       - Command line tools
     ├── generators/                - Code generators
     └── wrangler-integration/      - Cloudflare dev tools
@@ -346,10 +346,10 @@ All code should include:
 - **Target Metrics**: 10K+ GitHub stars, 100K+ weekly downloads, $16M ARR by Year 3
 - **Success Criteria**: See PRD sections on success metrics and roadmap
 
-## Velvet Glass Design System (Prototype)
+## Inference UI Glass Design System (Prototype)
 
 ### Overview
-An Expo-based glassmorphism design system implemented as the first prototype for the Velvet project. Located in `liquid-glass-app/`.
+An Expo-based glassmorphism design system implemented as the first prototype for the Inference UI project. Located in `liquid-glass-app/`.
 
 ### Technology Stack
 - **Expo SDK 54**: Cross-platform framework
@@ -456,7 +456,7 @@ import {
     shadow="lg"
   >
     <GlassText variant="heading" size="2xl" weight="bold">
-      Welcome to Velvet Glass
+      Welcome to Inference UI Glass
     </GlassText>
     <GlassButton
       title="Get Started"
@@ -487,9 +487,9 @@ import {
 - Native glass performance on iOS
 - Efficient gradient rendering with expo-linear-gradient
 
-### Next Steps for Full Velvet Integration
+### Next Steps for Full Inference UI Integration
 
-1. **Monorepo Setup**: Move liquid-glass-app to `@velvet/react-native` package
+1. **Monorepo Setup**: Move liquid-glass-app to `@inference-ui/react-native` package
 2. **Cloudflare Workers**: Setup edge infrastructure
 3. **Hybrid AI Engine**: Integrate local TFLite + Cloudflare Workers AI
 4. **Event Pipeline**: Implement capture → Workers → Analytics Engine
@@ -506,7 +506,7 @@ import {
 ## Cloudflare Architecture (Implementation Details)
 
 ### Overview
-Velvet uses **Cloudflare's complete edge platform** for all cloud services, providing:
+Inference UI uses **Cloudflare's complete edge platform** for all cloud services, providing:
 - 180+ global edge locations for ultra-low latency
 - Zero DevOps overhead (fully serverless)
 - 98%+ gross margins (vs 60% with traditional cloud)
@@ -539,7 +539,7 @@ GraphQL API (Dashboard Queries)
 → AsyncStorage (encrypted queue)
 
 // POST to Cloudflare Worker
-→ workers.velvet.dev/ingest
+→ workers.inference-ui.dev/ingest
 
 // Worker processes
 → Validates & sanitizes
@@ -896,7 +896,7 @@ const metrics = await env.ANALYTICS.query(`
 - Pay only for usage
 - No cold starts (Workers stay warm)
 
-### Why Cloudflare Works for Velvet
+### Why Cloudflare Works for Inference UI
 
 1. **Edge-First Architecture**: AI inference where users are
 2. **Integrated Stack**: Workers + AI + DB + Storage + Analytics
@@ -915,4 +915,4 @@ const metrics = await env.ANALYTICS.query(`
 - Cross-platform consistency is essential
 - Analytics and optimization are built-in, not bolted on
 - Open source sustainability via thoughtful SaaS monetization
-- **Velvet Glass prototype demonstrates the visual design foundation**
+- **Inference UI Glass prototype demonstrates the visual design foundation**

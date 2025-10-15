@@ -1,0 +1,245 @@
+---
+title: Getting Started
+description: Get started with Inference UI AI-Native UI components
+---
+
+# Getting Started
+
+Welcome to Inference UI! This guide will help you get started with the world's first AI-native UI component library.
+
+> Inference UI is currently in Phase 1 development. Some features are still being implemented.
+
+## What is Inference UI?
+
+Inference UI is an AI-native cross-platform UI component library that integrates intelligence into every component. Unlike traditional UI libraries where AI is an afterthought, Inference UI is built from the ground up with AI capabilities baked into each component.
+
+### Key Features
+
+- **🤖 AI-Native**: Every component has built-in AI capabilities (validation, autocomplete, adaptation)
+- **🎨 Beautiful Design**: Inference UI Glass design system with native glassmorphism effects
+- **📊 Event Intelligence**: Zero-config analytics integrated at the component layer
+- **🔄 Flow Engine**: Declarative multi-step UX flows
+- **🌐 Cross-Platform**: React Native, React, Vue (web coming soon)
+- **🔒 Privacy-First**: Local AI processing with optional cloud enhancement
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+- **Node.js 18+** installed
+- **React Native 0.70+** or **React 18+**
+- **TypeScript 5+** (recommended but not required)
+- Basic knowledge of React or React Native
+
+> Inference UI currently supports **React Native** with React (web) support coming in Phase 3.
+
+## Installation
+
+### Step 1: Install Inference UI packages
+
+Install the core Inference UI packages you need:
+
+```bash npm2yarn
+npm install @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
+```
+
+### Step 2: Install peer dependencies
+
+Inference UI requires several peer dependencies for React Native:
+
+```bash
+npm install expo-blur expo-linear-gradient react-native-fast-tflite @react-native-async-storage/async-storage
+```
+
+> If using Expo (recommended), these are included in Expo SDK 54+.
+
+### Step 3: Setup providers
+
+Wrap your app with Inference UI providers:
+
+```tsx
+import React from 'react';
+import { EventProvider } from '@inference-ui/events';
+import { FlowProvider } from '@inference-ui/flows';
+
+export default function App() {
+  return (
+    <EventProvider
+      config={{
+        batchSize: 50,
+        batchInterval: 20000,
+        endpoint: 'https://your-worker.workers.dev/events',
+      }}
+    >
+      <FlowProvider>
+        <YourApp />
+      </FlowProvider>
+    </EventProvider>
+  );
+}
+```
+
+### Step 4: Use Inference UI components
+
+Start using AI-powered components:
+
+```tsx
+import { GlassCard, AIInput, AIButton } from '@inference-ui/react-native';
+
+export function LoginScreen() {
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
+
+  return (
+    <GlassCard glassStyle="medium" padding={4}>
+      <AIInput
+        name="email"
+        label="Email"
+        value={email}
+        onChange={setEmail}
+        enableValidation={true}
+        enableAutocomplete={true}
+        placeholder="your@email.com"
+        keyboardType="email-address"
+      />
+
+      <AIInput
+        name="password"
+        label="Password"
+        value={password}
+        onChange={setPassword}
+        enableValidation={true}
+        placeholder="••••••••"
+        secureTextEntry
+      />
+
+      <AIButton
+        title="Sign In"
+        onPress={handleLogin}
+        variant="primary"
+        size="lg"
+        fullWidth
+      />
+    </GlassCard>
+  );
+}
+```
+
+## Your First Inference UI Component
+
+Here's a complete example of a simple form with AI-powered validation:
+
+```tsx
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import {
+  GradientBackground,
+  GlassCard,
+  GlassText,
+  AIInput,
+  AIButton,
+} from '@inference-ui/react-native';
+import { useEventTracker, useFormTracking } from '@inference-ui/events';
+
+export function SmartForm() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const track = useEventTracker();
+  const { trackSubmit } = useFormTracking('smart_form');
+
+  const handleSubmit = async () => {
+    // Your submit logic
+    await submitForm({ name, email });
+
+    // Track successful submission
+    trackSubmit(true);
+    track('form_success', { formType: 'smart_form' });
+  };
+
+  return (
+    <GradientBackground gradient="aurora">
+      <GlassCard glassStyle="medium" padding={6}>
+        <GlassText variant="heading" size="2xl" weight="bold">
+          Get Started
+        </GlassText>
+
+        <AIInput
+          name="name"
+          label="Full Name"
+          value={name}
+          onChange={setName}
+          enableValidation={true}
+          placeholder="John Doe"
+        />
+
+        <AIInput
+          name="email"
+          label="Email Address"
+          value={email}
+          onChange={setEmail}
+          enableValidation={true}
+          enableAutocomplete={true}
+          placeholder="john@example.com"
+          keyboardType="email-address"
+        />
+
+        <AIButton
+          title="Submit"
+          onPress={handleSubmit}
+          variant="primary"
+          size="lg"
+          fullWidth
+        />
+      </GlassCard>
+    </GradientBackground>
+  );
+}
+```
+
+### What's Happening Here?
+
+1. **GradientBackground**: Provides beautiful animated gradient background
+2. **GlassCard**: Creates glassmorphism effect container
+3. **AIInput**:
+   - Validates input in real-time using local AI
+   - Provides autocomplete suggestions
+   - Automatically tracks focus/blur events
+4. **AIButton**:
+   - Tracks button presses automatically
+   - Shows loading state during async operations
+5. **Event Tracking**:
+   - Form interactions tracked automatically
+   - Custom events tracked with `useEventTracker`
+
+## Next Steps
+
+Now that you have Inference UI set up, explore these topics:
+
+- [Installation →](/docs/installation) - Detailed installation guide
+- [Quick Start →](/docs/quickstart) - Build your first Inference UI app
+- [Architecture →](/docs/architecture) - Understand how Inference UI works
+- [AI Engine →](/docs/ai-engine) - Learn about hybrid AI routing
+- [Components →](/docs/components) - Explore all available components
+
+## Need Help?
+
+- **GitHub Issues**: [Report bugs or request features](https://github.com/velvet-ui/velvet/issues)
+- **Discussions**: [Join community discussions](https://github.com/velvet-ui/velvet/discussions)
+- **Documentation**: Browse the full docs
+- **Examples**: Check out the [demo app](/examples)
+
+## What's Next in Phase 1?
+
+Inference UI is actively being developed. Here's what's coming soon:
+
+- ✅ Core architecture and monorepo (Complete)
+- ✅ Inference UI Glass design system (Complete)
+- ✅ Hybrid AI engine (Complete)
+- ✅ Event intelligence platform (Complete)
+- ✅ Flow engine (Complete)
+- 🔄 Expanded React hooks
+- 🔄 20+ AI-powered components
+- 🔄 Production deployment
+- 🔄 Web platform support (React)
+
+Follow development on [GitHub](https://github.com/velvet-ui/velvet)!

@@ -12,7 +12,7 @@ import {
   useAutocomplete,
   useAccessibilityCheck,
   useAIMetrics,
-} from '@velvet/ai-engine';
+} from '@inference-ui/ai-engine';
 
 /**
  * Example 1: AI Initialization

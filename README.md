@@ -1,8 +1,8 @@
-# Velvet
+# Inference UI
 
 > AI-Native UI Component Library for React Native with Cloudflare Edge Integration
 
-Velvet is a modern, AI-powered UI component library that combines beautiful glassmorphism design with intelligent features like on-device machine learning, event tracking, and multi-step flow management.
+Inference UI is a modern, AI-powered UI component library that combines beautiful glassmorphism design with intelligent features like on-device machine learning, event tracking, and multi-step flow management.
 
 ## ✨ Features
 
@@ -19,20 +19,20 @@ Velvet is a modern, AI-powered UI component library that combines beautiful glas
 
 | Package | Description | Version |
 |---------|-------------|---------|
-| `@velvet/core` | Core utilities and types | 0.1.0 |
-| `@velvet/react-native` | Glassmorphism UI components | 0.1.0 |
-| `@velvet/ai-engine` | Hybrid AI engine (TFLite + Workers AI) | 0.1.0 |
-| `@velvet/events` | Event tracking and analytics | 0.1.0 |
-| `@velvet/flows` | Multi-step UX flow engine | 0.1.0 |
-| `@velvet/cloudflare` | Cloudflare Workers integration | 0.1.0 |
-| `@velvet/dev-tools` | Development and debugging tools | 0.1.0 |
+| `@inference-ui/core` | Core utilities and types | 0.1.0 |
+| `@inference-ui/react-native` | Glassmorphism UI components | 0.1.0 |
+| `@inference-ui/ai-engine` | Hybrid AI engine (TFLite + Workers AI) | 0.1.0 |
+| `@inference-ui/events` | Event tracking and analytics | 0.1.0 |
+| `@inference-ui/flows` | Multi-step UX flow engine | 0.1.0 |
+| `@inference-ui/cloudflare` | Cloudflare Workers integration | 0.1.0 |
+| `@inference-ui/dev-tools` | Development and debugging tools | 0.1.0 |
 
 ## 🚀 Quick Start
 
 ### Installation
 
 ```bash
-npm install @velvet/react-native @velvet/ai-engine @velvet/events @velvet/flows
+npm install @inference-ui/react-native @inference-ui/ai-engine @inference-ui/events @inference-ui/flows
 ```
 
 ### Basic Usage
@@ -40,9 +40,9 @@ npm install @velvet/react-native @velvet/ai-engine @velvet/events @velvet/flows
 ```tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { GlassView, GlassButton } from '@velvet/react-native';
-import { useAIInitialization, useTextClassification } from '@velvet/ai-engine';
-import { EventProvider, useScreenTracking } from '@velvet/events';
+import { GlassView, GlassButton } from '@inference-ui/react-native';
+import { useAIInitialization, useTextClassification } from '@inference-ui/ai-engine';
+import { EventProvider, useScreenTracking } from '@inference-ui/events';
 
 function App() {
   // Initialize AI
@@ -82,7 +82,7 @@ function App() {
 ### Glassmorphism Components
 
 ```tsx
-import { GlassView, GlassCard, GlassButton, GlassText } from '@velvet/react-native';
+import { GlassView, GlassCard, GlassButton, GlassText } from '@inference-ui/react-native';
 
 // Glass card with shadow
 <GlassCard
@@ -107,7 +107,7 @@ import { GlassView, GlassCard, GlassButton, GlassText } from '@velvet/react-nati
 ### Text Classification
 
 ```tsx
-import { useTextClassification } from '@velvet/ai-engine';
+import { useTextClassification } from '@inference-ui/ai-engine';
 
 function SentimentAnalyzer() {
   const { classify, loading, result } = useTextClassification();
@@ -128,7 +128,7 @@ function SentimentAnalyzer() {
 ### Form Validation
 
 ```tsx
-import { useFormValidation } from '@velvet/ai-engine';
+import { useFormValidation } from '@inference-ui/ai-engine';
 
 function SmartForm() {
   const { validate, result } = useFormValidation();
@@ -152,7 +152,7 @@ import {
   useButtonTracking,
   useFormTracking,
   useErrorTracking,
-} from '@velvet/events';
+} from '@inference-ui/events';
 
 function TrackedScreen() {
   // Auto-track screen views and duration
@@ -188,7 +188,7 @@ function TrackedScreen() {
 ### Onboarding Flow
 
 ```tsx
-import { FlowProvider, useOnboarding } from '@velvet/flows';
+import { FlowProvider, useOnboarding } from '@inference-ui/flows';
 
 const onboardingFlow = {
   id: 'onboarding',
@@ -223,7 +223,7 @@ function OnboardingScreen() {
 ### Checkout Flow with Validation
 
 ```tsx
-import { useCheckoutFlow } from '@velvet/flows';
+import { useCheckoutFlow } from '@inference-ui/flows';
 
 function CheckoutScreen() {
   const { currentStep, next, errors } = useCheckoutFlow(
@@ -265,7 +265,7 @@ See the [examples](./examples) directory for complete, working examples:
 npm test
 
 # Run tests for specific package
-npm test -- packages/@velvet/events
+npm test -- packages/@inference-ui/events
 
 # Run tests with coverage
 npm test -- --coverage
@@ -292,10 +292,21 @@ npm run format
 
 ## 📖 Documentation
 
-- [AI Engine API](./packages/@velvet/ai-engine/README.md)
-- [Event Tracking API](./packages/@velvet/events/README.md)
-- [Flow Engine API](./packages/@velvet/flows/README.md)
-- [UI Components API](./packages/@velvet/react-native/README.md)
+**📚 Full Documentation Site**: [docs.velvet.dev](https://docs.velvet.dev) (coming soon)
+
+Local docs development:
+```bash
+cd docs
+npm install
+npm run dev
+```
+
+### Package Documentation
+- [AI Engine API](./packages/@inference-ui/ai-engine/README.md)
+- [Event Tracking API](./packages/@inference-ui/events/README.md)
+- [Flow Engine API](./packages/@inference-ui/flows/README.md)
+- [UI Components API](./packages/@inference-ui/react-native/README.md)
+- [Cloudflare Deployment](./packages/@inference-ui/cloudflare/DEPLOYMENT.md)
 
 ## 🤝 Contributing
 
@@ -303,7 +314,7 @@ Contributions are welcome! Please read our contributing guidelines.
 
 ## 📄 License
 
-MIT © Velvet Team
+MIT © Inference UI Team
 
 ## 🙏 Acknowledgments
 

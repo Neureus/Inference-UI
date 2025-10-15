@@ -1,5 +1,5 @@
 # Phase 1 Implementation Roadmap (Months 1-6)
-## Velvet - AI-Native UI Library with Cloudflare
+## Inference UI - AI-Native UI Library with Cloudflare
 
 **Status**: Active Development
 **Timeline**: 6 months
@@ -49,13 +49,13 @@ By end of Month 6, deliver:
 2. Create package structure:
    ```
    packages/
-   ├── @velvet/core/
-   ├── @velvet/react-native/
-   ├── @velvet/ai-engine/
-   ├── @velvet/events/
-   ├── @velvet/flows/
-   ├── @velvet/cloudflare/
-   └── @velvet/dev-tools/
+   ├── @inference-ui/core/
+   ├── @inference-ui/react-native/
+   ├── @inference-ui/ai-engine/
+   ├── @inference-ui/events/
+   ├── @inference-ui/flows/
+   ├── @inference-ui/cloudflare/
+   └── @inference-ui/dev-tools/
    ```
 
 3. Configure build system:
@@ -76,7 +76,7 @@ By end of Month 6, deliver:
 
 5. Migrate liquid-glass-app:
    ```bash
-   mv liquid-glass-app packages/@velvet/react-native
+   mv liquid-glass-app packages/@inference-ui/react-native
    # Update imports and package.json
    ```
 
@@ -95,10 +95,10 @@ By end of Month 6, deliver:
 - Create hybrid decision router
 
 **Tasks**:
-1. Local AI Engine (@velvet/ai-engine/local):
+1. Local AI Engine (@inference-ui/ai-engine/local):
    ```bash
    # Install react-native-fast-tflite
-   cd packages/@velvet/react-native
+   cd packages/@inference-ui/react-native
    npm install react-native-fast-tflite
    npx pod-install  # iOS
    ```
@@ -111,7 +111,7 @@ By end of Month 6, deliver:
 
 3. Build local inference wrapper:
    ```typescript
-   // packages/@velvet/ai-engine/local/inference.ts
+   // packages/@inference-ui/ai-engine/local/inference.ts
    import { TFLite } from 'react-native-fast-tflite';
 
    export class LocalAI {
@@ -125,13 +125,13 @@ By end of Month 6, deliver:
 
 4. Cloudflare Workers AI Integration:
    ```bash
-   cd packages/@velvet/cloudflare
+   cd packages/@inference-ui/cloudflare
    wrangler init workers-ai
    ```
 
 5. Create Workers AI wrapper:
    ```typescript
-   // packages/@velvet/ai-engine/edge/workers-ai.ts
+   // packages/@inference-ui/ai-engine/edge/workers-ai.ts
    export async function classifyIntent(text: string) {
      const response = await fetch('https://api.velvet.dev/ai/classify', {
        method: 'POST',
@@ -144,7 +144,7 @@ By end of Month 6, deliver:
 
 6. Hybrid AI Router:
    ```typescript
-   // packages/@velvet/ai-engine/hybrid/router.ts
+   // packages/@inference-ui/ai-engine/hybrid/router.ts
    export function routeAIRequest(task: AITask) {
      if (task.privacy || task.offline || task.latency < 100) {
        return LocalAI.execute(task);
@@ -173,7 +173,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Event Capture Middleware:
    ```typescript
-   // packages/@velvet/events/capture/middleware.tsx
+   // packages/@inference-ui/events/capture/middleware.tsx
    export function withEventTracking<P>(Component: React.ComponentType<P>) {
      return (props: P & { analytics?: 'auto' | 'manual' }) => {
        const trackEvent = useEventTracker();
@@ -193,11 +193,11 @@ By end of Month 6, deliver:
 
 2. Local Event Queue:
    ```typescript
-   // packages/@velvet/events/storage/queue.ts
+   // packages/@inference-ui/events/storage/queue.ts
    import AsyncStorage from '@react-native-async-storage/async-storage';
 
    export class EventQueue {
-     private static QUEUE_KEY = '@velvet/events';
+     private static QUEUE_KEY = '@inference-ui/events';
 
      async add(event: Event) {
        const queue = await this.get();
@@ -240,7 +240,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Event Ingestion Worker:
    ```typescript
-   // packages/@velvet/cloudflare/workers/event-ingest/src/index.ts
+   // packages/@inference-ui/cloudflare/workers/event-ingest/src/index.ts
    export default {
      async fetch(request: Request, env: Env) {
        const events = await request.json();
@@ -306,7 +306,7 @@ By end of Month 6, deliver:
 
 3. Deploy to Cloudflare:
    ```bash
-   cd packages/@velvet/cloudflare/workers/event-ingest
+   cd packages/@inference-ui/cloudflare/workers/event-ingest
    wrangler deploy
    ```
 
@@ -430,7 +430,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Flow Definition API:
    ```typescript
-   // packages/@velvet/flows/engine/types.ts
+   // packages/@inference-ui/flows/engine/types.ts
    export interface FlowDefinition {
      id: string;
      steps: FlowStep[];
@@ -449,7 +449,7 @@ By end of Month 6, deliver:
 
 2. Flow Engine Implementation:
    ```typescript
-   // packages/@velvet/flows/engine/FlowEngine.tsx
+   // packages/@inference-ui/flows/engine/FlowEngine.tsx
    export function createFlow(definition: FlowDefinition) {
      return function Flow() {
        const [currentStep, setCurrentStep] = useState(0);
@@ -739,12 +739,12 @@ npm run dev
 ### Package-Specific
 ```bash
 # React Native
-cd packages/@velvet/react-native
+cd packages/@inference-ui/react-native
 npm run ios
 npm run android
 
 # Cloudflare Workers
-cd packages/@velvet/cloudflare
+cd packages/@inference-ui/cloudflare
 wrangler dev
 wrangler deploy
 wrangler tail  # View logs
@@ -883,4 +883,4 @@ By end of Month 6, we will have:
 - Billing integration prepared
 - Analytics dashboard wireframes
 
-This roadmap provides the foundation for a successful Phase 1 delivery, positioning Velvet as the world's first AI-native UI component library!
+This roadmap provides the foundation for a successful Phase 1 delivery, positioning Inference UI as the world's first AI-native UI component library!

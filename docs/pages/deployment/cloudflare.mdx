@@ -1,0 +1,441 @@
+# Cloudflare Workers Deployment
+
+Deploy Inference UI's backend infrastructure to Cloudflare Workers for global edge compute.
+
+import { Callout, Steps } from 'nextra/components'
+
+<Callout type="info">
+  Use the **FinHub** Cloudflare account for all deployments.
+</Callout>
+
+## Overview
+
+Inference UI's backend runs entirely on Cloudflare's edge platform:
+
+- **Cloudflare Workers** - Serverless compute (180+ locations)
+- **Workers AI** - GPU-powered AI inference at edge
+- **D1 Database** - SQLite at edge
+- **R2 Storage** - S3-compatible storage (no egress fees)
+- **KV Cache** - Global key-value store
+- **Analytics Engine** - Time-series event data
+
+## Quick Start
+
+<Steps>
+
+### Install Wrangler CLI
+
+```bash
+npm install -g wrangler
+```
+
+### Login to Cloudflare
+
+```bash
+wrangler login
+```
+
+Make sure you're using the **FinHub** account.
+
+### Navigate to Cloudflare package
+
+```bash
+cd packages/@inference-ui/cloudflare
+```
+
+### Create resources
+
+```bash
+# Create D1 database
+wrangler d1 create velvet-db
+
+# Create KV namespace
+wrangler kv:namespace create KV
+
+# Create R2 bucket
+wrangler r2 bucket create velvet-assets
+```
+
+### Update wrangler.toml
+
+Copy the IDs from the output and update `wrangler.toml`:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "velvet-db"
+database_id = "YOUR_DATABASE_ID"  # From create command
+
+[[kv_namespaces]]
+binding = "KV"
+id = "YOUR_KV_ID"  # From create command
+```
+
+### Initialize database
+
+```bash
+wrangler d1 execute velvet-db --file=./schema.sql
+```
+
+### Deploy
+
+```bash
+npm run build
+wrangler deploy
+```
+
+Your API will be available at:
+```
+https://velvet-api.<YOUR_SUBDOMAIN>.workers.dev
+```
+
+</Steps>
+
+## Architecture
+
+```
+React Native/Web App
+        │
+        ▼ HTTPS
+Cloudflare Workers (Edge)
+        │
+    ┌───┴────┬─────────┬────────┬──────────┐
+    ▼        ▼         ▼        ▼          ▼
+Workers AI   D1    R2 Storage   KV     Analytics
+(GPU AI)   (SQLite) (Assets)  (Cache)   Engine
+```
+
+## Services
+
+### Workers (Compute)
+
+**Purpose**: Run your GraphQL API and event ingestion at the edge
+
+**Configuration**: `wrangler.toml`
+```toml
+name = "velvet-api"
+main = "src/index.ts"
+compatibility_date = "2024-10-01"
+```
+
+**Pricing**:
+- 100,000 requests/day free
+- $0.50 per million requests after
+
+### Workers AI
+
+**Purpose**: AI inference at edge (Llama 3, Mistral, etc.)
+
+**Configuration**: Automatic with `[ai]` binding
+
+**Usage**:
+```typescript
+const result = await env.AI.run('@cf/meta/llama-3-8b', {
+  messages: [{ role: 'user', content: 'Classify this...' }],
+});
+```
+
+**Pricing**: ~$0.011 per 1,000 neurons
+
+### D1 Database
+
+**Purpose**: Store users, flows, sessions
+
+**Schema**: See `packages/@inference-ui/cloudflare/schema.sql`
+
+**Queries**:
+```typescript
+const users = await env.DB.prepare('SELECT * FROM users').all();
+```
+
+**Pricing**:
+- 5GB storage free
+- 5M reads/day free
+- 100K writes/day free
+
+### R2 Storage
+
+**Purpose**: Store AI models, user exports, backups
+
+**Usage**:
+```typescript
+await env.R2.put('models/validation.tflite', buffer);
+```
+
+**Pricing**:
+- 10GB storage free
+- **No egress fees** (unlike S3)
+
+### KV Cache
+
+**Purpose**: Cache AI results, sessions, rate limits
+
+**Usage**:
+```typescript
+await env.KV.put('ai:result:' + key, value, {
+  expirationTtl: 60,
+});
+```
+
+**Pricing**:
+- 100,000 reads/day free
+- 1,000 writes/day free
+
+### Analytics Engine
+
+**Purpose**: Time-series event data
+
+**Usage**:
+```typescript
+env.ANALYTICS.writeDataPoint({
+  indexes: ['user_123', 'session_456'],
+  blobs: ['button_press', 'AIButton'],
+  doubles: [Date.now(), 1.0],
+});
+```
+
+**Pricing**: $0.10 per million writes
+
+## Local Development
+
+### Start dev server
+
+```bash
+cd packages/@inference-ui/cloudflare
+wrangler dev
+```
+
+The API will be available at `http://localhost:8787`.
+
+### Test locally
+
+```bash
+# Health check
+curl http://localhost:8787/health
+
+# GraphQL
+curl -X POST http://localhost:8787/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ __schema { queryType { name } } }"}'
+```
+
+### Local database
+
+Wrangler automatically uses a local SQLite database:
+
+```bash
+wrangler d1 execute velvet-db --local --command="SELECT * FROM users"
+```
+
+## Production Deployment
+
+### Deploy to production
+
+```bash
+wrangler deploy --env=production
+```
+
+### Custom domain
+
+Add a custom domain for your API:
+
+```bash
+wrangler domains add api.velvet.dev
+```
+
+Or in Cloudflare Dashboard:
+1. Go to Workers & Pages > velvet-api
+2. Settings > Triggers > Custom Domains
+3. Add `api.velvet.dev`
+
+### Secrets
+
+Set production secrets:
+
+```bash
+wrangler secret put JWT_SECRET --env=production
+wrangler secret put STRIPE_SECRET_KEY --env=production
+```
+
+## Testing
+
+### Health check
+
+```bash
+curl https://velvet-api.<YOUR_SUBDOMAIN>.workers.dev/health
+```
+
+Expected:
+```json
+{
+  "status": "ok",
+  "version": "v1",
+  "timestamp": 1234567890
+}
+```
+
+### GraphQL endpoint
+
+```bash
+curl -X POST https://velvet-api.<YOUR_SUBDOMAIN>.workers.dev/graphql \
+  -H "Content-Type: application/json" \
+  -d '{"query": "{ __schema { types { name } } }"}'
+```
+
+### Event ingestion
+
+```bash
+curl -X POST https://velvet-api.<YOUR_SUBDOMAIN>.workers.dev/events/ingest \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -d '{"events": [...]}'
+```
+
+## Monitoring
+
+### View logs
+
+```bash
+# Real-time logs
+wrangler tail
+
+# Production logs
+wrangler tail --env=production
+```
+
+### Analytics
+
+View in Cloudflare Dashboard:
+- Workers & Pages > velvet-api > Analytics
+
+Key metrics:
+- Requests per second
+- Error rate
+- CPU time
+- Success rate
+
+## Cost Estimation
+
+### Free Tier (Development)
+- Workers: 100K requests/day
+- D1: 5GB storage, 5M reads/day
+- R2: 10GB storage
+- KV: 100K reads/day
+- **Total**: $0/month
+
+### Production (30M events/month)
+- Workers: ~$15/month
+- Workers AI: ~$10/month
+- Analytics Engine: ~$3/month
+- D1: $0 (within free tier)
+- R2: $0 (within free tier)
+- **Total**: ~$28/month
+
+### At Scale (1B events/month)
+- Workers: ~$500/month
+- Workers AI: ~$300/month
+- Analytics Engine: ~$100/month
+- D1: ~$50/month
+- **Total**: ~$950/month
+
+**Gross margin**: 98%+ (vs 60-70% with traditional cloud)
+
+## CI/CD
+
+### GitHub Actions
+
+Create `.github/workflows/deploy-workers.yml`:
+
+```yaml
+name: Deploy Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        working-directory: packages/@inference-ui/cloudflare
+
+      - name: Deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: packages/@inference-ui/cloudflare
+          command: deploy --env=production
+```
+
+Set secrets:
+- `CLOUDFLARE_API_TOKEN`
+- `CLOUDFLARE_ACCOUNT_ID`
+
+## Troubleshooting
+
+### "No account found"
+
+Solution:
+```bash
+wrangler logout
+wrangler login
+```
+
+### "Binding not found"
+
+Solution: Check all IDs are filled in `wrangler.toml`
+
+### "Database not found"
+
+Solution:
+```bash
+wrangler d1 list
+```
+
+### High CPU time
+
+Solutions:
+- Add database indexes
+- Cache AI results in KV
+- Optimize queries
+- Use local AI for simple tasks
+
+## Complete Guide
+
+For the complete technical deployment guide, see:
+
+- **[packages/@inference-ui/cloudflare/DEPLOYMENT.md](https://github.com/velvet-ui/velvet/tree/main/packages/@inference-ui/cloudflare/DEPLOYMENT.md)**
+
+Includes:
+- Database migrations
+- Backup/restore procedures
+- Advanced monitoring
+- Security best practices
+- Performance optimization
+- Production checklist
+
+## Resources
+
+- [Cloudflare Workers Docs](https://developers.cloudflare.com/workers/)
+- [D1 Database Docs](https://developers.cloudflare.com/d1/)
+- [Workers AI Docs](https://developers.cloudflare.com/workers-ai/)
+- [Wrangler CLI Reference](https://developers.cloudflare.com/workers/wrangler/commands/)
+
+## Next Steps
+
+- [Production Checklist →](/deployment/production) - Pre-launch checklist
+- [Documentation Deployment →](/deployment/docs-site) - Deploy docs site
+- [Architecture →](/docs/architecture) - Understand the system

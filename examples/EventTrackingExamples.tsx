@@ -16,7 +16,7 @@ import {
   useCustomEvent,
   usePerformanceTracking,
   useEventStats,
-} from '@velvet/events';
+} from '@inference-ui/events';
 
 /**
  * Example 1: Event Provider Setup
