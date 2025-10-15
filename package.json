@@ -1,0 +1,56 @@
+{
+  "name": "@liquid-ui/monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-Native UI Component Library - Monorepo",
+  "workspaces": [
+    "packages/@liquid-ui/*"
+  ],
+  "scripts": {
+    "build": "nx run-many --target=build --all",
+    "test": "nx run-many --target=test --all",
+    "lint": "nx run-many --target=lint --all",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "nx run-many --target=typecheck --all",
+    "clean": "nx reset && rm -rf node_modules packages/*/node_modules packages/*/dist",
+    "dev:react-native": "nx run @liquid-ui/react-native:start",
+    "dev:cloudflare": "nx run @liquid-ui/cloudflare:dev",
+    "deploy:cloudflare": "nx run @liquid-ui/cloudflare:deploy",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@typescript-eslint/eslint-plugin": "^6.19.0",
+    "@typescript-eslint/parser": "^6.19.0",
+    "eslint": "^8.56.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-native": "^4.1.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0",
+    "nx": "^18.0.0",
+    "prettier": "^3.2.4",
+    "typescript": "^5.3.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/liquid-ui.git"
+  },
+  "keywords": [
+    "ui",
+    "components",
+    "ai",
+    "react-native",
+    "cloudflare",
+    "glassmorphism",
+    "design-system"
+  ],
+  "author": "Liquid UI Team",
+  "license": "MIT"
+}

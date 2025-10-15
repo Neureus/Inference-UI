@@ -1,0 +1,28 @@
+{
+  "name": "@liquid-ui/dev-tools",
+  "version": "0.1.0",
+  "description": "Development tools and debugging utilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["dev-tools", "debugging", "inspector"],
+  "author": "Liquid UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@liquid-ui/core": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-native": "0.81.4"
+  },
+  "devDependencies": {
+    "@types/react": "~19.1.0",
+    "typescript": "^5.3.3"
+  }
+}

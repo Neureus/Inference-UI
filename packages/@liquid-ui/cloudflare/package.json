@@ -1,0 +1,26 @@
+{
+  "name": "@liquid-ui/cloudflare",
+  "version": "0.1.0",
+  "description": "Cloudflare Workers, D1, R2, and Workers AI integration",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "test": "jest",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["cloudflare", "workers", "d1", "r2", "workers-ai"],
+  "author": "Liquid UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@liquid-ui/core": "^0.1.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241127.0",
+    "wrangler": "^3.98.0",
+    "typescript": "^5.3.3"
+  }
+}
