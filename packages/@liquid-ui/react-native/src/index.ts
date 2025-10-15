@@ -39,3 +39,7 @@ export type {
 // Utils
 export { GradientBackground } from './utils';
 export type { GradientBackgroundProps } from './utils';
+
+// AI-Powered Components
+export { AIInput, AIButton } from './components';
+export type { AIInputProps, AIButtonProps } from './components';

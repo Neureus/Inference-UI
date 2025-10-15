@@ -91,6 +91,22 @@ export const colors = {
     medium: 'rgba(255, 255, 255, 0.3)',
     dark: 'rgba(0, 0, 0, 0.2)',
   },
+
+  // Flat colors for components (non-glass)
+  flat: {
+    primary: '#667eea',
+    secondary: '#764ba2',
+    success: '#22c55e',
+    error: '#ef4444',
+    warning: '#f59e0b',
+    info: '#3b82f6',
+    background: '#ffffff',
+    surface: '#f5f5f5',
+    border: 'rgba(0, 0, 0, 0.1)',
+    inputBackground: '#ffffff',
+    text: 'rgba(0, 0, 0, 0.95)',
+    textSecondary: 'rgba(0, 0, 0, 0.6)',
+  },
 } as const;
 
 export type Colors = typeof colors;
