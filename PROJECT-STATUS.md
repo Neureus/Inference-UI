@@ -494,8 +494,9 @@ Inference UI/
 3. `9944b9d` - Cloudflare infrastructure (806 insertions)
 4. `d840412` - Hybrid AI engine (1,104 insertions)
 5. `ad1871a` - Test infrastructure (27 passing tests)
-6. `500ae38` - Complete LiquidUI → Inference UI rebrand (145 files changed)
-7. Pending - Demo applications, examples, and Nextra 4 documentation site
+6. `500ae38` - Complete LiquidUI → Velvet rebrand (145 files changed)
+7. `e8d9db8` - Demo applications and documentation site (180 files changed)
+8. `4e77c6c` - Complete Velvet → Inference UI rebrand (180 files changed, 7,551 insertions)
 
 ---
 
@@ -768,4 +769,4 @@ Built with:
 - Nx
 
 **Generated**: October 14, 2025
-**Last Updated**: October 15, 2025 - Added comprehensive test infrastructure (27 passing tests), demo applications (examples + standalone Expo app), Nextra 4 documentation site with App Router, and Cloudflare deployment guides
+**Last Updated**: October 15, 2025 - Added comprehensive test infrastructure (27 passing tests), demo applications (examples + standalone Expo app), Nextra 4 documentation site with App Router, Cloudflare deployment guides, and complete rebrand from Velvet to Inference UI (180 files changed)
