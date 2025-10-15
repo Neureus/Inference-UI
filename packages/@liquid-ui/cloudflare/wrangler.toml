@@ -1,0 +1,59 @@
+# Cloudflare Workers Configuration
+# Account: FinHub
+
+name = "liquid-ui-api"
+main = "src/index.ts"
+compatibility_date = "2024-10-01"
+workers_dev = true
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "liquid-ui-db"
+database_id = "" # Will be filled after creating database
+
+# R2 Storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "liquid-ui-assets"
+
+# KV Namespace
+[[kv_namespaces]]
+binding = "KV"
+id = "" # Will be filled after creating namespace
+
+# Analytics Engine
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Workers AI
+[ai]
+binding = "AI"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+
+# Production Environment
+[env.production]
+name = "liquid-ui-api-production"
+workers_dev = false
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+# Durable Objects
+[[durable_objects.bindings]]
+name = "REALTIME"
+class_name = "RealtimeSession"
+script_name = "liquid-ui-realtime"
+
+# Build Configuration
+[build]
+command = "npm run build"
+watch_dirs = ["src"]
+
+# Triggers for scheduled events
+[[triggers.crons]]
+cron = "0 * * * *" # Every hour
