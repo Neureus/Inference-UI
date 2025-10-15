@@ -8,6 +8,8 @@ export interface Env {
   ANALYTICS: AnalyticsEngineDataset;
   STORAGE: R2Bucket;
   KV: KVNamespace;
+  API_VERSION?: string;
+  ENVIRONMENT?: string;
 }
 
 export interface WorkerRequest {

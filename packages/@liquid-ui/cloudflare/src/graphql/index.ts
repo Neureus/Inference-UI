@@ -4,7 +4,6 @@
 
 import type { Env } from '../types';
 import { createResponse, createErrorResponse } from '../workers';
-import { schema } from './schema';
 import { buildExecutionContext } from './context';
 
 export async function handleGraphQL(
@@ -18,7 +17,7 @@ export async function handleGraphQL(
 
   try {
     const body = await request.json();
-    const { query, variables, operationName } = body as {
+    const { query } = body as {
       query: string;
       variables?: Record<string, unknown>;
       operationName?: string;
@@ -29,7 +28,7 @@ export async function handleGraphQL(
     }
 
     // Build execution context
-    const context = buildExecutionContext(request, env, ctx);
+    buildExecutionContext(request, env, ctx);
 
     // TODO: Implement GraphQL execution with graphql-js or similar
     // For now, return a stub response

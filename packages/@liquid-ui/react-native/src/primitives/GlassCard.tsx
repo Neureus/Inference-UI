@@ -6,15 +6,15 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle, StyleProp } from 'react-native';
 import { GlassView, GlassViewProps } from './GlassView';
 import { theme, SpacingKey } from '../theme';
 
 export interface GlassCardProps extends Omit<GlassViewProps, 'style'> {
   padding?: SpacingKey;
   margin?: SpacingKey;
-  style?: ViewStyle;
-  contentStyle?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
+  contentStyle?: StyleProp<ViewStyle>;
 }
 
 export const GlassCard: React.FC<GlassCardProps> = ({

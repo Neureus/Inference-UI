@@ -6,6 +6,7 @@ import type { Event } from './types';
 
 export class EventTracker {
   track(eventName: string, properties?: Record<string, unknown>): void {
+    // TODO: Add to queue
     const event: Event = {
       id: this.generateId(),
       timestamp: Date.now(),
@@ -13,8 +14,7 @@ export class EventTracker {
       event: eventName,
       properties,
     };
-
-    // TODO: Add to queue
+    console.log('Event tracked:', event.id);
   }
 
   private generateId(): string {

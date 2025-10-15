@@ -11,6 +11,7 @@ import {
   StyleSheet,
   ViewStyle,
   PressableStateCallbackType,
+  StyleProp,
 } from 'react-native';
 import { GlassView, GlassViewProps } from './GlassView';
 import { GlassText } from './GlassText';
@@ -22,7 +23,7 @@ export interface GlassButtonProps extends Omit<GlassViewProps, 'children' | 'sty
   children?: React.ReactNode;
   disabled?: boolean;
   padding?: SpacingKey;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   fullWidth?: boolean;
 }
 

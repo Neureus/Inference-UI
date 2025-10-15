@@ -6,14 +6,14 @@
  */
 
 import React from 'react';
-import { StyleSheet, View, ViewStyle, Platform } from 'react-native';
+import { StyleSheet, View, ViewStyle, Platform, StyleProp } from 'react-native';
 import { BlurView } from 'expo-blur';
 import { GlassView as NativeGlassView, isLiquidGlassAvailable } from 'expo-glass-effect';
 import { theme, GlassStyle, TintType } from '../theme';
 
 export interface GlassViewProps {
   children?: React.ReactNode;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
   glassStyle?: GlassStyle;
   intensity?: number;
   tint?: TintType;
@@ -44,7 +44,7 @@ export const GlassView: React.FC<GlassViewProps> = ({
       borderWidth: 1,
       borderColor: glassConfig.borderColor,
       borderRadius: theme.glass.borderRadius[borderRadius],
-      overflow: 'hidden',
+      overflow: 'hidden' as const,
     },
     theme.glass.shadows[shadow],
     style,

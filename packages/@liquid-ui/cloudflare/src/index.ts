@@ -61,9 +61,9 @@ export default {
   },
 
   // Scheduled event handler (for cron jobs)
-  async scheduled(event: ScheduledEvent, env: Env, ctx: ExecutionContext): Promise<void> {
+  async scheduled(controller: ScheduledController, _env: Env, _ctx: ExecutionContext): Promise<void> {
     // Process aggregated analytics
-    console.log('Running scheduled task:', event.scheduledTime);
+    console.log('Running scheduled task:', controller.scheduledTime);
     // TODO: Implement scheduled analytics processing
   },
 } satisfies ExportedHandler<Env>;

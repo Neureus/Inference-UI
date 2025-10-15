@@ -3,13 +3,14 @@
  * Uses react-native-fast-tflite for on-device inference
  */
 
-import { TensorflowModel } from 'react-native-fast-tflite';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { AITask, AIResult, LocalModel, ModelRegistry } from './types';
 
+// TODO: Uncomment when react-native-fast-tflite is properly installed
+// import { TensorflowModel } from 'react-native-fast-tflite';
+
 class LocalAIEngine {
-  private models: Map<string, TensorflowModel> = new Map();
-  private modelRegistry: Partial<ModelRegistry> = {};
+  private models: Map<string, any> = new Map();
   private initialized = false;
 
   /**
@@ -155,7 +156,7 @@ class LocalAIEngine {
   /**
    * Run autocomplete
    */
-  private async runAutocomplete(prefix: string): Promise<string[]> {
+  private async runAutocomplete(_prefix: string): Promise<string[]> {
     const model = this.models.get('autocomplete');
     if (!model) {
       throw new Error('Autocomplete model not loaded');
@@ -170,7 +171,7 @@ class LocalAIEngine {
    * Run accessibility check
    */
   private async runAccessibilityCheck(
-    component: Record<string, unknown>
+    _component: Record<string, unknown>
   ): Promise<{
     score: number;
     issues: Array<{ type: string; severity: string; message: string }>;
@@ -199,10 +200,11 @@ class LocalAIEngine {
       }
 
       // Load model using react-native-fast-tflite
-      const model = await TensorflowModel.loadFromFile(modelInfo.path);
-      this.models.set(name, model);
+      // TODO: Import TensorflowModel from 'react-native-fast-tflite'
+      // const model = await TensorflowModel.loadFromFile(modelInfo.path);
+      // this.models.set(name, model);
 
-      console.log(`[LocalAI] Loaded model: ${name} (${modelInfo.size} bytes)`);
+      console.log(`[LocalAI] Model loading placeholder: ${name} (${modelInfo.size} bytes)`);
     } catch (error) {
       console.error(`[LocalAI] Failed to load model ${name}:`, error);
       // Continue without this model
@@ -225,7 +227,7 @@ class LocalAIEngine {
   /**
    * Preprocess text to input tensor
    */
-  private preprocessText(text: string): number[] {
+  private preprocessText(text: string): Float32Array {
     // TODO: Implement proper tokenization and encoding
     // For now, return dummy tensor
     const maxLength = 128;
@@ -239,13 +241,13 @@ class LocalAIEngine {
       encoded.push(0);
     }
 
-    return encoded;
+    return new Float32Array(encoded);
   }
 
   /**
    * Postprocess classification output
    */
-  private postprocessClassification(output: unknown): {
+  private postprocessClassification(_output: unknown): {
     label: string;
     confidence: number;
   } {
@@ -276,9 +278,9 @@ class LocalAIEngine {
    * Cleanup and release resources
    */
   async dispose(): Promise<void> {
-    for (const [name, model] of this.models) {
+    for (const [name] of this.models) {
       try {
-        model.dispose();
+        // TODO: Implement proper model disposal when TensorflowModel is available
         console.log(`[LocalAI] Disposed model: ${name}`);
       } catch (error) {
         console.error(`[LocalAI] Failed to dispose model ${name}:`, error);

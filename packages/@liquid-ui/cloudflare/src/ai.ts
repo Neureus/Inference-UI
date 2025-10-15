@@ -7,7 +7,7 @@ export async function runAI(
   model: string,
   input: unknown
 ): Promise<unknown> {
-  return await ai.run(model, input);
+  return await ai.run(model as any, input);
 }
 
 export const MODELS = {

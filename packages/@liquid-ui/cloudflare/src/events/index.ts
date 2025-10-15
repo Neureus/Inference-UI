@@ -62,11 +62,11 @@ async function processEvent(
   let sentiment: string | undefined;
 
   try {
-    const aiResult = await runAI(env.AI, MODELS.TEXT_CLASSIFICATION, {
+    await runAI(env.AI, MODELS.TEXT_CLASSIFICATION, {
       text: JSON.stringify(event.properties || {}),
     });
 
-    // TODO: Parse AI result
+    // TODO: Parse AI result and extract intent/sentiment
     intent = 'unknown';
     sentiment = 'neutral';
   } catch (error) {
@@ -122,7 +122,7 @@ async function processEvent(
   ctx.waitUntil(checkTriggers(event, env));
 }
 
-async function checkTriggers(event: IncomingEvent, env: Env): Promise<void> {
+async function checkTriggers(_event: IncomingEvent, _env: Env): Promise<void> {
   // TODO: Implement trigger checking
   // - High-value user actions
   // - Error events

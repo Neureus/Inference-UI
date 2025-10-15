@@ -5,6 +5,7 @@
     "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
+    "composite": true,
     "jsx": "react-native"
   },
   "include": ["src/**/*"],
