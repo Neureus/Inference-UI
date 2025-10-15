@@ -1,0 +1,29 @@
+{
+  "name": "@velvet/flows",
+  "version": "0.1.0",
+  "description": "UX flow engine for Liquid UI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": ["flows", "ux", "wizard"],
+  "author": "Liquid UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@velvet/core": "^0.1.0",
+    "@velvet/events": "^0.1.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-native": "0.82.0"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "^5.8.2"
+  }
+}

@@ -16,7 +16,7 @@ import {
   useCustomEvent,
   usePerformanceTracking,
   useEventStats,
-} from '@liquid-ui/events';
+} from '@velvet/events';
 
 /**
  * Example 1: Event Provider Setup

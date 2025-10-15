@@ -12,7 +12,7 @@ import {
   useAutocomplete,
   useAccessibilityCheck,
   useAIMetrics,
-} from '@liquid-ui/ai-engine';
+} from '@velvet/ai-engine';
 
 /**
  * Example 1: AI Initialization

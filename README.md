@@ -1,8 +1,8 @@
-# Liquid UI
+# Velvet
 
 > AI-Native UI Component Library for React Native with Cloudflare Edge Integration
 
-Liquid UI is a modern, AI-powered UI component library that combines beautiful glassmorphism design with intelligent features like on-device machine learning, event tracking, and multi-step flow management.
+Velvet is a modern, AI-powered UI component library that combines beautiful glassmorphism design with intelligent features like on-device machine learning, event tracking, and multi-step flow management.
 
 ## ✨ Features
 
@@ -19,20 +19,20 @@ Liquid UI is a modern, AI-powered UI component library that combines beautiful g
 
 | Package | Description | Version |
 |---------|-------------|---------|
-| `@liquid-ui/core` | Core utilities and types | 0.1.0 |
-| `@liquid-ui/react-native` | Glassmorphism UI components | 0.1.0 |
-| `@liquid-ui/ai-engine` | Hybrid AI engine (TFLite + Workers AI) | 0.1.0 |
-| `@liquid-ui/events` | Event tracking and analytics | 0.1.0 |
-| `@liquid-ui/flows` | Multi-step UX flow engine | 0.1.0 |
-| `@liquid-ui/cloudflare` | Cloudflare Workers integration | 0.1.0 |
-| `@liquid-ui/dev-tools` | Development and debugging tools | 0.1.0 |
+| `@velvet/core` | Core utilities and types | 0.1.0 |
+| `@velvet/react-native` | Glassmorphism UI components | 0.1.0 |
+| `@velvet/ai-engine` | Hybrid AI engine (TFLite + Workers AI) | 0.1.0 |
+| `@velvet/events` | Event tracking and analytics | 0.1.0 |
+| `@velvet/flows` | Multi-step UX flow engine | 0.1.0 |
+| `@velvet/cloudflare` | Cloudflare Workers integration | 0.1.0 |
+| `@velvet/dev-tools` | Development and debugging tools | 0.1.0 |
 
 ## 🚀 Quick Start
 
 ### Installation
 
 ```bash
-npm install @liquid-ui/react-native @liquid-ui/ai-engine @liquid-ui/events @liquid-ui/flows
+npm install @velvet/react-native @velvet/ai-engine @velvet/events @velvet/flows
 ```
 
 ### Basic Usage
@@ -40,9 +40,9 @@ npm install @liquid-ui/react-native @liquid-ui/ai-engine @liquid-ui/events @liqu
 ```tsx
 import React from 'react';
 import { View, Text } from 'react-native';
-import { GlassView, GlassButton } from '@liquid-ui/react-native';
-import { useAIInitialization, useTextClassification } from '@liquid-ui/ai-engine';
-import { EventProvider, useScreenTracking } from '@liquid-ui/events';
+import { GlassView, GlassButton } from '@velvet/react-native';
+import { useAIInitialization, useTextClassification } from '@velvet/ai-engine';
+import { EventProvider, useScreenTracking } from '@velvet/events';
 
 function App() {
   // Initialize AI
@@ -82,7 +82,7 @@ function App() {
 ### Glassmorphism Components
 
 ```tsx
-import { GlassView, GlassCard, GlassButton, GlassText } from '@liquid-ui/react-native';
+import { GlassView, GlassCard, GlassButton, GlassText } from '@velvet/react-native';
 
 // Glass card with shadow
 <GlassCard
@@ -107,7 +107,7 @@ import { GlassView, GlassCard, GlassButton, GlassText } from '@liquid-ui/react-n
 ### Text Classification
 
 ```tsx
-import { useTextClassification } from '@liquid-ui/ai-engine';
+import { useTextClassification } from '@velvet/ai-engine';
 
 function SentimentAnalyzer() {
   const { classify, loading, result } = useTextClassification();
@@ -128,7 +128,7 @@ function SentimentAnalyzer() {
 ### Form Validation
 
 ```tsx
-import { useFormValidation } from '@liquid-ui/ai-engine';
+import { useFormValidation } from '@velvet/ai-engine';
 
 function SmartForm() {
   const { validate, result } = useFormValidation();
@@ -152,7 +152,7 @@ import {
   useButtonTracking,
   useFormTracking,
   useErrorTracking,
-} from '@liquid-ui/events';
+} from '@velvet/events';
 
 function TrackedScreen() {
   // Auto-track screen views and duration
@@ -188,7 +188,7 @@ function TrackedScreen() {
 ### Onboarding Flow
 
 ```tsx
-import { FlowProvider, useOnboarding } from '@liquid-ui/flows';
+import { FlowProvider, useOnboarding } from '@velvet/flows';
 
 const onboardingFlow = {
   id: 'onboarding',
@@ -223,7 +223,7 @@ function OnboardingScreen() {
 ### Checkout Flow with Validation
 
 ```tsx
-import { useCheckoutFlow } from '@liquid-ui/flows';
+import { useCheckoutFlow } from '@velvet/flows';
 
 function CheckoutScreen() {
   const { currentStep, next, errors } = useCheckoutFlow(
@@ -265,7 +265,7 @@ See the [examples](./examples) directory for complete, working examples:
 npm test
 
 # Run tests for specific package
-npm test -- packages/@liquid-ui/events
+npm test -- packages/@velvet/events
 
 # Run tests with coverage
 npm test -- --coverage
@@ -292,10 +292,10 @@ npm run format
 
 ## 📖 Documentation
 
-- [AI Engine API](./packages/@liquid-ui/ai-engine/README.md)
-- [Event Tracking API](./packages/@liquid-ui/events/README.md)
-- [Flow Engine API](./packages/@liquid-ui/flows/README.md)
-- [UI Components API](./packages/@liquid-ui/react-native/README.md)
+- [AI Engine API](./packages/@velvet/ai-engine/README.md)
+- [Event Tracking API](./packages/@velvet/events/README.md)
+- [Flow Engine API](./packages/@velvet/flows/README.md)
+- [UI Components API](./packages/@velvet/react-native/README.md)
 
 ## 🤝 Contributing
 
@@ -303,7 +303,7 @@ Contributions are welcome! Please read our contributing guidelines.
 
 ## 📄 License
 
-MIT © Liquid UI Team
+MIT © Velvet Team
 
 ## 🙏 Acknowledgments
 

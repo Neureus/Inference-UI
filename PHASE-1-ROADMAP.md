@@ -1,5 +1,5 @@
 # Phase 1 Implementation Roadmap (Months 1-6)
-## LiquidUI - AI-Native UI Library with Cloudflare
+## Velvet - AI-Native UI Library with Cloudflare
 
 **Status**: Active Development
 **Timeline**: 6 months
@@ -43,19 +43,19 @@ By end of Month 6, deliver:
    npm init -y
    npx lerna init
    # or
-   npx create-nx-workspace liquid-ui
+   npx create-nx-workspace velvet
    ```
 
 2. Create package structure:
    ```
    packages/
-   ├── @liquid-ui/core/
-   ├── @liquid-ui/react-native/
-   ├── @liquid-ui/ai-engine/
-   ├── @liquid-ui/events/
-   ├── @liquid-ui/flows/
-   ├── @liquid-ui/cloudflare/
-   └── @liquid-ui/dev-tools/
+   ├── @velvet/core/
+   ├── @velvet/react-native/
+   ├── @velvet/ai-engine/
+   ├── @velvet/events/
+   ├── @velvet/flows/
+   ├── @velvet/cloudflare/
+   └── @velvet/dev-tools/
    ```
 
 3. Configure build system:
@@ -76,7 +76,7 @@ By end of Month 6, deliver:
 
 5. Migrate liquid-glass-app:
    ```bash
-   mv liquid-glass-app packages/@liquid-ui/react-native
+   mv liquid-glass-app packages/@velvet/react-native
    # Update imports and package.json
    ```
 
@@ -95,10 +95,10 @@ By end of Month 6, deliver:
 - Create hybrid decision router
 
 **Tasks**:
-1. Local AI Engine (@liquid-ui/ai-engine/local):
+1. Local AI Engine (@velvet/ai-engine/local):
    ```bash
    # Install react-native-fast-tflite
-   cd packages/@liquid-ui/react-native
+   cd packages/@velvet/react-native
    npm install react-native-fast-tflite
    npx pod-install  # iOS
    ```
@@ -111,7 +111,7 @@ By end of Month 6, deliver:
 
 3. Build local inference wrapper:
    ```typescript
-   // packages/@liquid-ui/ai-engine/local/inference.ts
+   // packages/@velvet/ai-engine/local/inference.ts
    import { TFLite } from 'react-native-fast-tflite';
 
    export class LocalAI {
@@ -125,15 +125,15 @@ By end of Month 6, deliver:
 
 4. Cloudflare Workers AI Integration:
    ```bash
-   cd packages/@liquid-ui/cloudflare
+   cd packages/@velvet/cloudflare
    wrangler init workers-ai
    ```
 
 5. Create Workers AI wrapper:
    ```typescript
-   // packages/@liquid-ui/ai-engine/edge/workers-ai.ts
+   // packages/@velvet/ai-engine/edge/workers-ai.ts
    export async function classifyIntent(text: string) {
-     const response = await fetch('https://api.liquid-ui.dev/ai/classify', {
+     const response = await fetch('https://api.velvet.dev/ai/classify', {
        method: 'POST',
        headers: { 'Content-Type': 'application/json' },
        body: JSON.stringify({ text })
@@ -144,7 +144,7 @@ By end of Month 6, deliver:
 
 6. Hybrid AI Router:
    ```typescript
-   // packages/@liquid-ui/ai-engine/hybrid/router.ts
+   // packages/@velvet/ai-engine/hybrid/router.ts
    export function routeAIRequest(task: AITask) {
      if (task.privacy || task.offline || task.latency < 100) {
        return LocalAI.execute(task);
@@ -173,7 +173,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Event Capture Middleware:
    ```typescript
-   // packages/@liquid-ui/events/capture/middleware.tsx
+   // packages/@velvet/events/capture/middleware.tsx
    export function withEventTracking<P>(Component: React.ComponentType<P>) {
      return (props: P & { analytics?: 'auto' | 'manual' }) => {
        const trackEvent = useEventTracker();
@@ -193,11 +193,11 @@ By end of Month 6, deliver:
 
 2. Local Event Queue:
    ```typescript
-   // packages/@liquid-ui/events/storage/queue.ts
+   // packages/@velvet/events/storage/queue.ts
    import AsyncStorage from '@react-native-async-storage/async-storage';
 
    export class EventQueue {
-     private static QUEUE_KEY = '@liquid-ui/events';
+     private static QUEUE_KEY = '@velvet/events';
 
      async add(event: Event) {
        const queue = await this.get();
@@ -240,7 +240,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Event Ingestion Worker:
    ```typescript
-   // packages/@liquid-ui/cloudflare/workers/event-ingest/src/index.ts
+   // packages/@velvet/cloudflare/workers/event-ingest/src/index.ts
    export default {
      async fetch(request: Request, env: Env) {
        const events = await request.json();
@@ -306,13 +306,13 @@ By end of Month 6, deliver:
 
 3. Deploy to Cloudflare:
    ```bash
-   cd packages/@liquid-ui/cloudflare/workers/event-ingest
+   cd packages/@velvet/cloudflare/workers/event-ingest
    wrangler deploy
    ```
 
 4. Configure Analytics Engine:
    ```bash
-   wrangler analytics create-dataset liquid-ui-events
+   wrangler analytics create-dataset velvet-events
    ```
 
 **Deliverables**:
@@ -430,7 +430,7 @@ By end of Month 6, deliver:
 **Tasks**:
 1. Flow Definition API:
    ```typescript
-   // packages/@liquid-ui/flows/engine/types.ts
+   // packages/@velvet/flows/engine/types.ts
    export interface FlowDefinition {
      id: string;
      steps: FlowStep[];
@@ -449,7 +449,7 @@ By end of Month 6, deliver:
 
 2. Flow Engine Implementation:
    ```typescript
-   // packages/@liquid-ui/flows/engine/FlowEngine.tsx
+   // packages/@velvet/flows/engine/FlowEngine.tsx
    export function createFlow(definition: FlowDefinition) {
      return function Flow() {
        const [currentStep, setCurrentStep] = useState(0);
@@ -739,12 +739,12 @@ npm run dev
 ### Package-Specific
 ```bash
 # React Native
-cd packages/@liquid-ui/react-native
+cd packages/@velvet/react-native
 npm run ios
 npm run android
 
 # Cloudflare Workers
-cd packages/@liquid-ui/cloudflare
+cd packages/@velvet/cloudflare
 wrangler dev
 wrangler deploy
 wrangler tail  # View logs
@@ -761,10 +761,10 @@ npm run simulate:events
 ### Cloudflare Operations
 ```bash
 # Database migrations
-wrangler d1 migrations apply liquid-ui-db
+wrangler d1 migrations apply velvet-db
 
 # Query database
-wrangler d1 execute liquid-ui-db --command "SELECT * FROM users"
+wrangler d1 execute velvet-db --command "SELECT * FROM users"
 
 # Analytics queries
 wrangler analytics query "SELECT ..."
@@ -883,4 +883,4 @@ By end of Month 6, we will have:
 - Billing integration prepared
 - Analytics dashboard wireframes
 
-This roadmap provides the foundation for a successful Phase 1 delivery, positioning LiquidUI as the world's first AI-native UI component library!
+This roadmap provides the foundation for a successful Phase 1 delivery, positioning Velvet as the world's first AI-native UI component library!

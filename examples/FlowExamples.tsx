@@ -13,7 +13,7 @@ import {
   useCheckoutFlow,
   useFlowTracking,
   type Flow,
-} from '@liquid-ui/flows';
+} from '@velvet/flows';
 
 /**
  * Example Flow Definitions
