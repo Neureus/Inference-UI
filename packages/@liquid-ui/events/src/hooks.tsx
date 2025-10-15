@@ -28,8 +28,8 @@ export function EventProvider({
   children: React.ReactNode;
   config: EventConfig;
 }) {
-  const trackerRef = useRef(new EventTracker());
-  const queueRef = useRef(new EventQueue());
+  const queueRef = useRef(new EventQueue(config));
+  const trackerRef = useRef(new EventTracker(queueRef.current));
 
   const value: EventContextValue = {
     tracker: trackerRef.current,
