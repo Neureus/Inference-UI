@@ -15,7 +15,9 @@
   "author": "Liquid UI Team",
   "license": "MIT",
   "dependencies": {
-    "@liquid-ui/core": "^0.1.0"
+    "@liquid-ui/core": "^0.1.0",
+    "react-native-fast-tflite": "^1.0.0",
+    "@react-native-async-storage/async-storage": "^1.23.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
