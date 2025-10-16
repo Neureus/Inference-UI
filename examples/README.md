@@ -74,7 +74,7 @@ Comprehensive demo combining all features:
 ### Prerequisites
 
 ```bash
-npm install @inference-ui/react zod
+npm install inference-ui-react zod
 ```
 
 ### Setup Backend
@@ -112,7 +112,7 @@ export default function App() {
 ### Quick Start
 
 ```tsx
-import { useChat } from '@inference-ui/react';
+import { useChat } from 'inference-ui-react';
 
 function QuickChatExample() {
   const { messages, input, setInput, append, isLoading } = useChat({
@@ -165,7 +165,7 @@ export default function App() {
 ## Learn More
 
 - [Inference UI Documentation](../README.md)
-- [Component API](../packages/@inference-ui/react-native/README.md)
+- [Component API](../packages/inference-ui-react-native/README.md)
 - [AI Engine](../packages/@inference-ui/ai-engine/README.md)
 - [Event Tracking](../packages/@inference-ui/events/README.md)
 - [Flow Engine](../packages/@inference-ui/flows/README.md)

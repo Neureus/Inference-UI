@@ -25,7 +25,7 @@ import {
   AIInput,
   AIButton,
   theme,
-} from '@inference-ui/react-native';
+} from 'inference-ui-react-native';
 import {
   useAIInitialization,
   useAIMetrics,

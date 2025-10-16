@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from 'react';
-import { useObject } from '@inference-ui/react';
+import { useObject } from 'inference-ui-react';
 import { z } from 'zod';
 
 /**

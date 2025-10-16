@@ -1,4 +1,7 @@
-# @inference-ui/react
+# inference-ui-react
+
+[![npm version](https://badge.fury.io/js/inference-ui-react.svg)](https://www.npmjs.com/package/inference-ui-react)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 React hooks for AI streaming, chat, completions, and generative UI. Built on Cloudflare Workers AI for ultra-low latency edge inference.
 
@@ -16,15 +19,20 @@ React hooks for AI streaming, chat, completions, and generative UI. Built on Clo
 ## Installation
 
 ```bash
-npm install @inference-ui/react zod
+npm install inference-ui-react zod react
 ```
+
+**Links**:
+- npm: https://www.npmjs.com/package/inference-ui-react
+- GitHub: https://github.com/Neureus/Inference-UI
+- Documentation: https://inference-ui.dev
 
 ## Quick Start
 
 ### Chat Interface
 
 ```tsx
-import { useChat } from '@inference-ui/react';
+import { useChat } from 'inference-ui-react';
 
 function ChatDemo() {
   const { messages, input, setInput, append, isLoading } = useChat({
@@ -70,7 +78,7 @@ function ChatDemo() {
 ### Text Completion
 
 ```tsx
-import { useCompletion } from '@inference-ui/react';
+import { useCompletion } from 'inference-ui-react';
 
 function CompletionDemo() {
   const { completion, complete, isLoading } = useCompletion({
@@ -94,7 +102,7 @@ function CompletionDemo() {
 ### Type-Safe Object Generation
 
 ```tsx
-import { useObject } from '@inference-ui/react';
+import { useObject } from 'inference-ui-react';
 import { z } from 'zod';
 
 const RecipeSchema = z.object({
@@ -185,8 +193,8 @@ interface UseChatResult {
 #### Example with Advanced Features
 
 ```tsx
-import { useChat } from '@inference-ui/react';
-import { MessageList } from '@inference-ui/react';
+import { useChat } from 'inference-ui-react';
+import { MessageList } from 'inference-ui-react';
 
 function AdvancedChat() {
   const {
@@ -292,7 +300,7 @@ interface UseCompletionResult {
 #### Example: Autocomplete
 
 ```tsx
-import { useCompletion } from '@inference-ui/react';
+import { useCompletion } from 'inference-ui-react';
 
 function Autocomplete() {
   const { completion, complete, isLoading } = useCompletion({
@@ -369,7 +377,7 @@ interface UseObjectResult<T> {
 #### Example: Form Data Generation
 
 ```tsx
-import { useObject } from '@inference-ui/react';
+import { useObject } from 'inference-ui-react';
 import { z } from 'zod';
 
 const UserProfileSchema = z.object({
@@ -448,7 +456,7 @@ Render custom React components from AI tool calls.
 ### Tool Registry
 
 ```tsx
-import { ToolRegistry } from '@inference-ui/react';
+import { ToolRegistry } from 'inference-ui-react';
 import { z } from 'zod';
 
 // Define a tool
@@ -485,7 +493,7 @@ ToolRegistry.register(weatherTool);
 ### Message Rendering
 
 ```tsx
-import { MessageList, ToolRenderer } from '@inference-ui/react';
+import { MessageList, ToolRenderer } from 'inference-ui-react';
 
 function ChatWithTools() {
   const { messages } = useChat({
@@ -635,7 +643,7 @@ import type {
   MessagePart,
   StreamStatus,
   ToolDefinition,
-} from '@inference-ui/react';
+} from 'inference-ui-react';
 
 // Type-safe tool definition
 const myTool: ToolDefinition<{ query: string }, SearchResults> = {

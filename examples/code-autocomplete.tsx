@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useCompletion } from '@inference-ui/react';
+import { useCompletion } from 'inference-ui-react';
 
 export default function CodeAutocomplete() {
   const [code, setCode] = useState('');

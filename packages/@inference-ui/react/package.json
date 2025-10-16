@@ -1,5 +1,5 @@
 {
-  "name": "@inference-ui/react",
+  "name": "inference-ui-react",
   "version": "0.1.0",
   "description": "React hooks for AI streaming, chat, completions, and generative UI",
   "main": "dist/index.js",

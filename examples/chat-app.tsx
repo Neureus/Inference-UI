@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { useChat, MessageList } from '@inference-ui/react';
+import { useChat, MessageList } from 'inference-ui-react';
 import './chat-app.css';
 
 export default function ChatApp() {
