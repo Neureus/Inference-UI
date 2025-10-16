@@ -2,7 +2,36 @@
 
 Collection of example code demonstrating Inference UI's AI-native features.
 
-## Files
+## React Streaming Examples (NEW)
+
+### chat-app.tsx
+Full-featured chat application with streaming AI:
+- Real-time message streaming with `useChat`
+- Conversation history management
+- Message status indicators
+- Stop, retry, and regenerate controls
+- Beautiful glassmorphic UI
+- Mobile-responsive design
+
+### recipe-generator.tsx
+Type-safe recipe generation with Zod:
+- Progressive object streaming with `useObject`
+- Zod schema validation in real-time
+- Partial object updates during streaming
+- Save and manage generated recipes
+- Preset prompt templates
+- Nutrition information display
+
+### code-autocomplete.tsx
+Real-time code suggestions:
+- Code completion with `useCompletion`
+- Debounced autocomplete triggers
+- Keyboard shortcuts (Tab, Esc, Ctrl+Space)
+- Inline suggestion overlay
+- Multiple language examples
+- Monaco-style editor
+
+## React Native Examples
 
 ### AIExamples.tsx
 Complete examples of AI engine integration:
@@ -32,22 +61,89 @@ Flow-based UX pattern examples:
 - Conditional flow routing
 - Flow analytics integration
 
-### Inference UIDemo.tsx
+### VelvetDemo.tsx
 Comprehensive demo combining all features:
 - AI-powered components
 - Event tracking throughout
 - Flow-based navigation
-- Inference UI Glass design system
+- Velvet Glass design system
 - Real-time metrics display
 
-## Running Examples
+## Running React Streaming Examples
+
+### Prerequisites
+
+```bash
+npm install @inference-ui/react zod
+```
+
+### Setup Backend
+
+Deploy the streaming endpoints to Cloudflare:
+
+```bash
+cd packages/@inference-ui/cloudflare
+wrangler deploy
+```
+
+Your API will be available at: `https://inference-ui-api.neureus.workers.dev`
+
+### Use in Your React App
+
+```tsx
+import ChatApp from './examples/chat-app';
+import RecipeGenerator from './examples/recipe-generator';
+import CodeAutocomplete from './examples/code-autocomplete';
+
+// Use in your app
+export default function App() {
+  return (
+    <div>
+      <ChatApp />
+      {/* or */}
+      <RecipeGenerator />
+      {/* or */}
+      <CodeAutocomplete />
+    </div>
+  );
+}
+```
+
+### Quick Start
+
+```tsx
+import { useChat } from '@inference-ui/react';
+
+function QuickChatExample() {
+  const { messages, input, setInput, append, isLoading } = useChat({
+    api: 'https://inference-ui-api.neureus.workers.dev/stream/chat',
+  });
+
+  return (
+    <div>
+      {messages.map(msg => (
+        <div key={msg.id}>{/* render message */}</div>
+      ))}
+      <input
+        value={input}
+        onChange={e => setInput(e.target.value)}
+      />
+      <button onClick={() => append({ role: 'user', content: input })}>
+        Send
+      </button>
+    </div>
+  );
+}
+```
+
+## Running React Native Examples
 
 These examples are meant to be imported into React Native applications.
 
 For a complete, runnable demo see:
-- [`../inference-ui-demo-app/`](../inference-ui-demo-app/) - Standalone Expo app
+- [`../velvet-demo-app/`](../velvet-demo-app/) - Standalone Expo app
 
-## Usage
+### Usage
 
 ```tsx
 import { AIInitializationExample } from './examples/AIExamples';
