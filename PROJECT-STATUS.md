@@ -1045,7 +1045,173 @@ Complete React package with AI streaming hooks and backend endpoints:
 - 14b80b5 - Add @inference-ui/react package with streaming hooks and backends
 - ad2f45c - Add comprehensive documentation and examples
 
+### 11. ✅ inference-ui-react v0.2.0 (InferenceUIProvider - Zero-Config)
+
+**Status**: Complete
+**Date**: October 16, 2025
+**Location**: `packages/@inference-ui/react`
+**npm**: https://www.npmjs.com/package/inference-ui-react
+**Version**: 0.2.0
+**Commits**: 71b78e9
+
+Major release adding provider pattern for zero-configuration usage:
+
+**InferenceUIProvider**:
+- **Global Configuration Context** - Wrap app once, configure everywhere
+- **Zero-Config Mode** - Hooks work without any configuration
+- **Environment Variables** - Production-ready with env support
+- **Self-Hosted Support** - Easy custom Cloudflare Workers deployment
+- **Custom Endpoints** - Override per hook type (chat, completion, object)
+- **Global Headers** - Authentication and custom headers
+- **Default Throttle** - Configure streaming throttle globally
+
+**Provider Configuration Interface**:
+```typescript
+interface InferenceUIConfig {
+  apiUrl?: string;                       // Default: free SaaS tier
+  apiKey?: string;                       // For paid tiers
+  headers?: Record<string, string>;      // Global headers
+  credentials?: RequestCredentials;      // CORS credentials
+  experimental_throttle?: number;        // Default throttle (ms)
+  endpoints?: {                          // Custom endpoint overrides
+    chat?: string;
+    completion?: string;
+    object?: string;
+  };
+}
+```
+
+**Breaking Changes**:
+- `api` prop is now **optional** on all hooks (useChat, useCompletion, useObject)
+- Uses provider configuration when `api` prop is not specified
+- **Old code still works** - `api` prop overrides provider
+
+**New Files**:
+- `src/provider.tsx` (180 lines) - Provider implementation
+  - `InferenceUIProvider` component
+  - `useInferenceUIConfig` hook
+  - `resolveEndpoint` helper
+  - `mergeHeaders` helper
+- `CHANGELOG.md` (72 lines) - Version history and migration guide
+- `examples/provider-example.tsx` (220 lines) - 7 configuration examples
+
+**Updated Files**:
+- All hooks (useChat, useCompletion, useObject) - Provider integration
+- `src/types.ts` - Made `api` optional in config interfaces
+- `src/index.ts` - Export provider exports
+- `README.md` - Added provider documentation (50+ lines)
+- `package.json` - Bumped to v0.2.0
+
+**Usage Examples**:
+
+**Zero-config (recommended):**
+```tsx
+<InferenceUIProvider>
+  <App />
+</InferenceUIProvider>
+
+function ChatComponent() {
+  const { messages, append } = useChat();  // No config needed!
+}
+```
+
+**Production setup:**
+```tsx
+<InferenceUIProvider
+  config={{
+    apiUrl: process.env.NEXT_PUBLIC_INFERENCE_API_URL,
+    apiKey: process.env.NEXT_PUBLIC_INFERENCE_API_KEY,
+    experimental_throttle: 50,
+  }}
+>
+  <App />
+</InferenceUIProvider>
+```
+
+**Self-hosted:**
+```tsx
+<InferenceUIProvider
+  config={{
+    apiUrl: 'https://my-workers.company.com',
+    endpoints: {
+      chat: 'https://my-workers.company.com/api/chat',
+      completion: 'https://my-workers.company.com/api/complete',
+    },
+  }}
+>
+  <App />
+</InferenceUIProvider>
+```
+
+**Per-component override:**
+```tsx
+function CustomChat() {
+  const { messages, append } = useChat({
+    api: 'https://custom-endpoint.com/chat',  // Override provider
+  });
+}
+```
+
+**Migration Guide**:
+
+Before (v0.1.0):
+```tsx
+const { messages, append } = useChat({
+  api: 'https://inference-ui-api.neureus.workers.dev/stream/chat',
+});
+```
+
+After (v0.2.0) - Recommended:
+```tsx
+<InferenceUIProvider>
+  <App />
+</InferenceUIProvider>
+
+const { messages, append } = useChat();  // No api prop needed
+```
+
+After (v0.2.0) - Still works:
+```tsx
+const { messages, append } = useChat({
+  api: 'https://inference-ui-api.neureus.workers.dev/stream/chat',
+});
+```
+
+**Benefits**:
+- **DRY** - Don't repeat API URLs across components
+- **Environment-aware** - Easy dev/staging/prod configuration
+- **Flexible** - Can override per-component when needed
+- **Progressive** - Old code continues to work
+- **Self-hosted friendly** - Easy custom deployment configuration
+
+**npm Publication**:
+- Package: inference-ui-react@0.2.0
+- Published: October 16, 2025
+- Size: 29.4 KB (tarball), 142.8 KB (unpacked)
+- Files: 62
+- Downloads: https://www.npmjs.com/package/inference-ui-react
+
+**GitHub Release**:
+- Tag: v0.2.0
+- Pushed to origin
+
+**Code Stats**:
+- **Files Added**: 3 (provider.tsx, CHANGELOG.md, provider-example.tsx)
+- **Files Modified**: 7 (3 hooks, types.ts, index.ts, README.md, package.json)
+- **Lines Added**: 639+
+- **Lines Modified**: 28
+
+**Documentation**:
+- Updated README with provider pattern examples (100+ lines added)
+- Created comprehensive CHANGELOG.md
+- Added provider-example.tsx with 7 usage patterns
+- Updated API Reference to show `api` as optional
+
+**Commits**:
+- bbb8883 - Update documentation with published npm package name
+- 71b78e9 - Add InferenceUIProvider for zero-config usage (v0.2.0)
+
 ---
 
 **Generated**: October 14, 2025
-**Last Updated**: October 16, 2025 - Added complete @inference-ui/react package with useChat, useCompletion, and useObject hooks; implemented streaming infrastructure with StreamManager and MessageParser; added generative UI support with ToolRegistry; created three Cloudflare Workers streaming endpoints; wrote comprehensive documentation (1,500+ lines) and three complete example applications (1,700+ lines)
+**Last Updated**: October 16, 2025 - Published inference-ui-react v0.2.0 with InferenceUIProvider for zero-config usage; made api prop optional on all hooks; added environment variable support; created comprehensive provider documentation and examples
