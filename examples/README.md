@@ -2,7 +2,34 @@
 
 Collection of example code demonstrating Inference UI's AI-native features.
 
-## React Streaming Examples (NEW)
+## Complete Integration Example (⭐ NEW)
+
+### complete-integration-example.tsx
+**The ultimate integration showcase** - demonstrates all Inference UI packages working together in a single application:
+
+**Features:**
+- ✅ InferenceUIProvider for zero-config streaming AI
+- ✅ EventProvider for automatic analytics tracking
+- ✅ Hybrid AI Engine (local TFLite + edge Workers AI)
+- ✅ Real-time AI metrics and performance monitoring
+- ✅ Smart form with AI validation and sentiment analysis
+- ✅ Streaming chat with automatic event tracking
+- ✅ Analytics dashboard with live metrics
+- ✅ Error tracking and performance monitoring
+
+**Demonstrates:**
+- Provider pattern for unified configuration
+- Hybrid AI routing (local vs edge decisions)
+- Event tracking throughout the entire app
+- Streaming AI with real-time updates
+- Form validation with AI + Zod
+- Text classification and sentiment analysis
+- Performance metrics and monitoring
+- Error handling and recovery
+
+**Perfect for:** Learning how all packages work together, understanding the complete architecture, building production applications.
+
+## React Streaming Examples
 
 ### chat-app.tsx
 Full-featured chat application with streaming AI:
