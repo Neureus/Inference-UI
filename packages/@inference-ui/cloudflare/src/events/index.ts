@@ -55,7 +55,7 @@ export async function handleEventIngestion(
 async function processEvent(
   incomingEvent: IncomingEvent,
   env: Env,
-  ctx: ExecutionContext
+  _ctx: ExecutionContext
 ): Promise<void> {
   // Normalize event with defaults
   const event = {
@@ -68,13 +68,18 @@ async function processEvent(
     properties: incomingEvent.properties || {},
   };
 
-  // 1. Enrich event with AI classification
-  let intent: string | undefined;
-  let sentiment: string | undefined;
+  // 1. Enrich event with classification
+  let intent: string;
+  let sentiment: string;
 
-  try {
-    // Generate a prompt for intent and sentiment analysis
-    const analysisPrompt = `Analyze this user event and provide:
+  // Use rule-based classification by default for reliability
+  // AI enrichment can be enabled via env var when ready
+  const useAI = env.ENVIRONMENT === 'production' && false; // Disabled for now
+
+  if (useAI) {
+    try {
+      // Generate a prompt for intent and sentiment analysis
+      const analysisPrompt = `Analyze this user event and provide:
 1. Intent (e.g., explore, purchase, configure, help, error)
 2. Sentiment (positive, neutral, negative)
 
@@ -84,36 +89,41 @@ Properties: ${JSON.stringify(event.properties || {})}
 
 Respond in JSON format: {"intent": "...", "sentiment": "..."}`;
 
-    const aiResult = await runAI(env.AI, MODELS.LLAMA_3_8B, {
-      messages: [
-        { role: 'system', content: 'You are an event analysis assistant. Analyze user events and respond with JSON.' },
-        { role: 'user', content: analysisPrompt }
-      ],
-    });
+      const aiResult = await runAI(env.AI, MODELS.LLAMA_3_8B, {
+        messages: [
+          { role: 'system', content: 'You are an event analysis assistant. Analyze user events and respond with JSON.' },
+          { role: 'user', content: analysisPrompt }
+        ],
+      });
 
-    // Parse AI response
-    if (aiResult && typeof aiResult === 'object') {
-      const response = (aiResult as any).response || (aiResult as any).text || '';
+      // Parse AI response
+      if (aiResult && typeof aiResult === 'object') {
+        const response = (aiResult as any).response || (aiResult as any).text || '';
 
-      // Try to extract JSON from response
-      const jsonMatch = response.match(/\{[^}]+\}/);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        intent = parsed.intent || 'unknown';
-        sentiment = parsed.sentiment || 'neutral';
+        // Try to extract JSON from response
+        const jsonMatch = response.match(/\{[^}]+\}/);
+        if (jsonMatch) {
+          const parsed = JSON.parse(jsonMatch[0]);
+          intent = parsed.intent || classifyIntent(event.event, event.properties);
+          sentiment = parsed.sentiment || classifySentiment(event.event);
+        } else {
+          // Fallback: simple keyword-based classification
+          intent = classifyIntent(event.event, event.properties);
+          sentiment = classifySentiment(event.event);
+        }
       } else {
-        // Fallback: simple keyword-based classification
+        // Fallback classification
         intent = classifyIntent(event.event, event.properties);
         sentiment = classifySentiment(event.event);
       }
-    } else {
-      // Fallback classification
+    } catch (error) {
+      console.error('AI enrichment failed, using rule-based classification:', error);
+      // Fallback to rule-based classification
       intent = classifyIntent(event.event, event.properties);
       sentiment = classifySentiment(event.event);
     }
-  } catch (error) {
-    console.error('AI enrichment failed:', error);
-    // Fallback to rule-based classification
+  } else {
+    // Use reliable rule-based classification
     intent = classifyIntent(event.event, event.properties);
     sentiment = classifySentiment(event.event);
   }
@@ -135,8 +145,8 @@ Respond in JSON format: {"intent": "...", "sentiment": "..."}`;
       doubles: [event.timestamp, 1], // timestamp, count
     });
   } catch (error) {
-    console.error('Analytics Engine write failed:', error);
-    throw error;
+    console.error('Analytics Engine write failed (non-fatal):', error);
+    // Don't throw - Analytics Engine is optional
   }
 
   // 3. Store detailed event in D1 (for recent events query)
@@ -162,17 +172,17 @@ Respond in JSON format: {"intent": "...", "sentiment": "..."}`;
     // Don't fail the request if D1 insert fails
   }
 
-  // 4. Check for real-time alerts/triggers
-  ctx.waitUntil(checkTriggers(event, env));
+  // 4. Check for real-time alerts/triggers (disabled for now)
+  // ctx.waitUntil(checkTriggers(event, env));
 }
 
-async function checkTriggers(_event: IncomingEvent, _env: Env): Promise<void> {
-  // TODO: Implement trigger checking
-  // - High-value user actions
-  // - Error events
-  // - Conversion events
-  // - etc.
-}
+// async function checkTriggers(_event: IncomingEvent, _env: Env): Promise<void> {
+//   // TODO: Implement trigger checking
+//   // - High-value user actions
+//   // - Error events
+//   // - Conversion events
+//   // - etc.
+// }
 
 // Fallback classification functions
 
