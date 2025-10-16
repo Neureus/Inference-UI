@@ -1,0 +1,26 @@
+# Cloudflare Pages Configuration for Inference UI Website
+# Account: Neureus
+
+name = "inference-ui-website"
+account_id = "2bba1309281bf805590ca30d4e49adb0"
+compatibility_date = "2025-01-01"
+
+# Pages Configuration
+pages_build_output_dir = "out"
+
+[build]
+command = "npm run build"
+
+# Environment Variables
+[env.production]
+NEXT_PUBLIC_API_URL = "https://inference-ui-api.neureus.workers.dev"
+NEXT_PUBLIC_API_GRAPHQL_ENDPOINT = "/graphql"
+NEXT_PUBLIC_API_EVENTS_ENDPOINT = "/events"
+NEXT_PUBLIC_ENABLE_ANALYTICS = "true"
+NEXT_PUBLIC_SITE_URL = "https://inference-ui.pages.dev"
+
+[env.preview]
+NEXT_PUBLIC_API_URL = "https://inference-ui-api.neureus.workers.dev"
+NEXT_PUBLIC_API_GRAPHQL_ENDPOINT = "/graphql"
+NEXT_PUBLIC_API_EVENTS_ENDPOINT = "/events"
+NEXT_PUBLIC_ENABLE_ANALYTICS = "false"
