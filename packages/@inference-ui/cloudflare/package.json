@@ -16,6 +16,7 @@
   "author": "Liquid UI Team",
   "license": "MIT",
   "dependencies": {
+    "@inference-ui/api": "^0.1.0",
     "@inference-ui/core": "^0.1.0",
     "graphql": "^16.9.0"
   },

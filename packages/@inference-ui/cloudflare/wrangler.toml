@@ -1,7 +1,8 @@
 # Cloudflare Workers Configuration
-# Account: FinHub
+# Account: Neureus
 
 name = "inference-ui-api"
+account_id = "2bba1309281bf805590ca30d4e49adb0"
 main = "src/index.ts"
 compatibility_date = "2024-10-01"
 workers_dev = true
@@ -10,7 +11,7 @@ workers_dev = true
 [[d1_databases]]
 binding = "DB"
 database_name = "inference-ui-db"
-database_id = "4de74839-04b8-4b83-8550-578701999006"
+database_id = "47fd4ca8-72b1-44be-b310-53feb2e0a101"
 
 # R2 Storage
 [[r2_buckets]]
@@ -20,7 +21,7 @@ bucket_name = "inference-ui-assets"
 # KV Namespace
 [[kv_namespaces]]
 binding = "KV"
-id = "bfbe2757ae154da691a261a3af4fad85"
+id = "a9cf26e3f5104521b279b245adaa2801"
 
 # Analytics Engine
 [[analytics_engine_datasets]]
