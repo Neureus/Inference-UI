@@ -4,11 +4,17 @@
   "description": "React hooks for AI streaming, chat, completions, and generative UI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest --passWithNoTests",
     "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "react",
@@ -17,15 +23,27 @@
     "chat",
     "completion",
     "generative-ui",
-    "inference"
+    "inference",
+    "llm",
+    "gpt",
+    "openai",
+    "anthropic",
+    "cloudflare",
+    "workers-ai",
+    "vercel-ai"
   ],
   "author": "Inference UI Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neureus/Inference-UI.git",
+    "directory": "packages/@inference-ui/react"
+  },
+  "homepage": "https://inference-ui.dev",
+  "bugs": {
+    "url": "https://github.com/Neureus/Inference-UI/issues"
+  },
   "dependencies": {
-    "@inference-ui/api": "^0.1.0",
-    "@inference-ui/core": "^0.1.0",
-    "@inference-ui/ai-engine": "^0.1.0",
-    "@inference-ui/events": "^0.1.0",
     "zod": "^3.24.1"
   },
   "peerDependencies": {
@@ -35,5 +53,8 @@
     "@types/react": "^19.0.0",
     "typescript": "^5.8.2",
     "react": "^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -28,7 +28,7 @@ import { useChat } from '@inference-ui/react';
 
 function ChatDemo() {
   const { messages, input, setInput, append, isLoading } = useChat({
-    api: 'https://your-api.workers.dev/stream/chat',
+    api: 'https://inference-ui-api.neureus.workers.dev/stream/chat',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -74,7 +74,7 @@ import { useCompletion } from '@inference-ui/react';
 
 function CompletionDemo() {
   const { completion, complete, isLoading } = useCompletion({
-    api: 'https://your-api.workers.dev/stream/completion',
+    api: 'https://inference-ui-api.neureus.workers.dev/stream/completion',
   });
 
   return (
@@ -106,7 +106,7 @@ const RecipeSchema = z.object({
 
 function RecipeGenerator() {
   const { object, submit, isLoading } = useObject({
-    api: 'https://your-api.workers.dev/stream/object',
+    api: 'https://inference-ui-api.neureus.workers.dev/stream/object',
     schema: RecipeSchema,
   });
 
