@@ -6,6 +6,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { z } from 'zod';
 import type { ObjectConfig, StreamStatus } from '../types';
 import { StreamManager } from '../streaming/stream-manager';
+import { useInferenceUIConfig, resolveEndpoint, mergeHeaders } from '../provider';
 
 /**
  * Object generation state and handlers
@@ -32,6 +33,8 @@ export function useObject<T extends z.ZodType>(
   config: ObjectConfig<T>
 ): UseObjectResult<z.infer<T>> {
   type InferredType = z.infer<T>;
+
+  const providerConfig = useInferenceUIConfig();
 
   const [object, setObject] = useState<Partial<InferredType> | undefined>(
     config.initialValue as Partial<InferredType> | undefined
@@ -85,13 +88,17 @@ export function useObject<T extends z.ZodType>(
         let jsonText = '';
         let finalObject: InferredType | undefined;
 
+        // Resolve API endpoint
+        const api = resolveEndpoint(config.api, providerConfig, '/stream/object');
+
         // Resolve headers and body
-        const headers = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const configHeaders = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const headers = mergeHeaders(configHeaders, providerConfig);
         const body = typeof config.body === 'function' ? await config.body() : config.body;
 
         // Create stream manager
         streamManagerRef.current = new StreamManager({
-          api: config.api,
+          api,
           protocol: 'data',
           headers,
           body: {
@@ -100,9 +107,9 @@ export function useObject<T extends z.ZodType>(
             schema: (config.schema as any)?.shape || {},
             objectId: config.id,
           },
-          credentials: config.credentials,
+          credentials: config.credentials || providerConfig.credentials,
           signal: abortControllerRef.current.signal,
-          experimental_throttle: config.experimental_throttle,
+          experimental_throttle: config.experimental_throttle ?? providerConfig.experimental_throttle,
           onEvent: (event) => {
             if (event.type === 'message-start') {
               setStatus('streaming');
@@ -197,7 +204,7 @@ export function useObject<T extends z.ZodType>(
         abortControllerRef.current = null;
       }
     },
-    [config]
+    [config, providerConfig]
   );
 
   /**

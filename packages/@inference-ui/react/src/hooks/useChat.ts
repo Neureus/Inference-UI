@@ -6,6 +6,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { UIMessage, ChatConfig, StreamStatus, MessagePart, MessageRole } from '../types';
 import { StreamManager } from '../streaming/stream-manager';
 import { mergeParts, createMessage } from '../streaming/message-parser';
+import { useInferenceUIConfig, resolveEndpoint, mergeHeaders } from '../provider';
 
 /**
  * Chat state and handlers
@@ -26,7 +27,9 @@ export interface UseChatResult {
 /**
  * useChat hook
  */
-export function useChat(config: ChatConfig): UseChatResult {
+export function useChat(config: ChatConfig = {}): UseChatResult {
+  const providerConfig = useInferenceUIConfig();
+
   const [messages, setMessages] = useState<UIMessage[]>(config.initialMessages || []);
   const [input, setInput] = useState<string>('');
   const [status, setStatus] = useState<StreamStatus>('ready');
@@ -95,13 +98,17 @@ export function useChat(config: ChatConfig): UseChatResult {
         const assistantMessage = currentMessageRef.current;
         const accumulatedParts: MessagePart[] = [];
 
+        // Resolve API endpoint
+        const api = resolveEndpoint(config.api, providerConfig, '/stream/chat');
+
         // Resolve headers and body
-        const headers = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const configHeaders = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const headers = mergeHeaders(configHeaders, providerConfig);
         const body = typeof config.body === 'function' ? await config.body() : config.body;
 
         // Create stream manager
         streamManagerRef.current = new StreamManager({
-          api: config.api,
+          api,
           protocol: 'data',
           headers,
           body: {
@@ -114,9 +121,9 @@ export function useChat(config: ChatConfig): UseChatResult {
             })),
             chatId: config.id,
           },
-          credentials: config.credentials,
+          credentials: config.credentials || providerConfig.credentials,
           signal: abortControllerRef.current.signal,
-          experimental_throttle: config.experimental_throttle,
+          experimental_throttle: config.experimental_throttle ?? providerConfig.experimental_throttle,
           onEvent: (event) => {
             if (event.type === 'message-start') {
               setStatus('streaming');
@@ -176,7 +183,7 @@ export function useChat(config: ChatConfig): UseChatResult {
         currentMessageRef.current = null;
       }
     },
-    [messages, config]
+    [messages, config, providerConfig]
   );
 
   /**

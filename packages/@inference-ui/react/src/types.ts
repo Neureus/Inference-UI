@@ -102,7 +102,13 @@ export interface UIMessage {
  * Stream configuration
  */
 export interface StreamConfig {
-  api: string;
+  /**
+   * API endpoint URL
+   * If not provided, uses the endpoint from InferenceUIProvider
+   * @example 'https://inference-ui-api.neureus.workers.dev/stream/chat'
+   * @example 'https://my-api.com/custom-endpoint'
+   */
+  api?: string;
   headers?: Record<string, string> | (() => Record<string, string> | Promise<Record<string, string>>);
   body?: Record<string, unknown> | (() => Record<string, unknown> | Promise<Record<string, unknown>>);
   credentials?: RequestCredentials;

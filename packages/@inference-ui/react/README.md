@@ -29,15 +29,24 @@ npm install inference-ui-react zod react
 
 ## Quick Start
 
-### Chat Interface
+### Zero-Config with Provider (Recommended)
+
+The easiest way to get started is with `InferenceUIProvider`. Wrap your app once and all hooks work automatically:
 
 ```tsx
-import { useChat } from 'inference-ui-react';
+import { InferenceUIProvider, useChat } from 'inference-ui-react';
+
+function App() {
+  return (
+    <InferenceUIProvider>
+      <ChatDemo />
+    </InferenceUIProvider>
+  );
+}
 
 function ChatDemo() {
-  const { messages, input, setInput, append, isLoading } = useChat({
-    api: 'https://inference-ui-api.neureus.workers.dev/stream/chat',
-  });
+  // No need to specify 'api' - uses default SaaS endpoint
+  const { messages, input, setInput, append, isLoading } = useChat();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -74,6 +83,64 @@ function ChatDemo() {
   );
 }
 ```
+
+### Environment-Based Configuration
+
+For production apps, use environment variables:
+
+```tsx
+import { InferenceUIProvider } from 'inference-ui-react';
+
+function App() {
+  return (
+    <InferenceUIProvider
+      config={{
+        apiUrl: process.env.NEXT_PUBLIC_INFERENCE_API_URL,
+        apiKey: process.env.NEXT_PUBLIC_INFERENCE_API_KEY, // For paid tiers
+        experimental_throttle: 50,
+      }}
+    >
+      <YourApp />
+    </InferenceUIProvider>
+  );
+}
+```
+
+### Self-Hosted Deployment
+
+Deploy your own Cloudflare Workers:
+
+```tsx
+<InferenceUIProvider
+  config={{
+    apiUrl: 'https://my-inference.company.com',
+    headers: {
+      'X-Company-Id': 'your-company',
+    },
+  }}
+>
+  <YourApp />
+</InferenceUIProvider>
+```
+
+### Per-Component Override
+
+You can still specify `api` prop to override the provider config:
+
+```tsx
+function CustomChat() {
+  // Override provider for this component only
+  const { messages, append } = useChat({
+    api: 'https://custom-endpoint.com/chat',
+  });
+
+  // ... rest of component
+}
+```
+
+## Hook Examples
+
+The following examples show individual hook usage. When using `InferenceUIProvider`, the `api` prop is optional.
 
 ### Text Completion
 
@@ -152,6 +219,64 @@ function RecipeGenerator() {
 
 ## API Reference
 
+### `InferenceUIProvider`
+
+Global configuration provider for all hooks. Wrap your app to eliminate repetitive `api` props.
+
+#### Props
+
+```typescript
+interface InferenceUIConfig {
+  apiUrl?: string;                       // Base API URL (default: 'https://inference-ui-api.neureus.workers.dev')
+  apiKey?: string;                       // API key for authenticated requests (default: undefined)
+  headers?: Record<string, string>;      // Default headers for all requests
+  credentials?: RequestCredentials;      // Request credentials mode (default: 'same-origin')
+  experimental_throttle?: number;        // Default throttle time for streaming (ms)
+  endpoints?: {                          // Custom endpoint overrides
+    chat?: string;
+    completion?: string;
+    object?: string;
+  };
+}
+```
+
+#### Examples
+
+**Zero-config (free SaaS):**
+```tsx
+<InferenceUIProvider>
+  <App />
+</InferenceUIProvider>
+```
+
+**Production setup:**
+```tsx
+<InferenceUIProvider
+  config={{
+    apiUrl: process.env.NEXT_PUBLIC_INFERENCE_API_URL,
+    apiKey: process.env.NEXT_PUBLIC_INFERENCE_API_KEY,
+    experimental_throttle: 50,
+  }}
+>
+  <App />
+</InferenceUIProvider>
+```
+
+**Self-hosted:**
+```tsx
+<InferenceUIProvider
+  config={{
+    apiUrl: 'https://my-workers.company.com',
+    endpoints: {
+      chat: 'https://my-workers.company.com/api/chat',
+      completion: 'https://my-workers.company.com/api/complete',
+    },
+  }}
+>
+  <App />
+</InferenceUIProvider>
+```
+
 ### `useChat`
 
 Hook for building conversational AI interfaces with streaming responses.
@@ -160,7 +285,7 @@ Hook for building conversational AI interfaces with streaming responses.
 
 ```typescript
 interface ChatConfig {
-  api: string;                           // Required: API endpoint
+  api?: string;                          // Optional: API endpoint (uses provider if not specified)
   id?: string;                           // Optional: Chat session ID
   initialMessages?: UIMessage[];         // Optional: Initial conversation history
   maxMessages?: number;                  // Optional: Limit conversation length
@@ -267,7 +392,7 @@ Hook for single-turn text completions with streaming.
 
 ```typescript
 interface CompletionConfig {
-  api: string;                              // Required: API endpoint
+  api?: string;                             // Optional: API endpoint (uses provider if not specified)
   id?: string;                              // Optional: Completion ID
   initialInput?: string;                    // Optional: Initial input
   initialCompletion?: string;               // Optional: Initial completion
@@ -342,7 +467,7 @@ Hook for type-safe structured data generation with Zod validation.
 
 ```typescript
 interface ObjectConfig<T extends z.ZodType> {
-  api: string;                              // Required: API endpoint
+  api?: string;                             // Optional: API endpoint (uses provider if not specified)
   schema: T;                                // Required: Zod schema
   id?: string;                              // Optional: Object generation ID
   initialValue?: z.infer<T>;                // Optional: Initial object

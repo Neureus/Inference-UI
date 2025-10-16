@@ -1,6 +1,6 @@
 {
   "name": "inference-ui-react",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "React hooks for AI streaming, chat, completions, and generative UI",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

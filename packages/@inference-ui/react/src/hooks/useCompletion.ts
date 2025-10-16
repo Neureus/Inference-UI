@@ -6,6 +6,7 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import type { CompletionConfig, StreamStatus } from '../types';
 import { StreamManager } from '../streaming/stream-manager';
 import { extractText } from '../streaming/message-parser';
+import { useInferenceUIConfig, resolveEndpoint, mergeHeaders } from '../provider';
 
 /**
  * Completion state and handlers
@@ -26,7 +27,9 @@ export interface UseCompletionResult {
 /**
  * useCompletion hook
  */
-export function useCompletion(config: CompletionConfig): UseCompletionResult {
+export function useCompletion(config: CompletionConfig = {}): UseCompletionResult {
+  const providerConfig = useInferenceUIConfig();
+
   const [completion, setCompletion] = useState<string>(config.initialCompletion || '');
   const [input, setInput] = useState<string>(config.initialInput || '');
   const [status, setStatus] = useState<StreamStatus>('ready');
@@ -74,13 +77,17 @@ export function useCompletion(config: CompletionConfig): UseCompletionResult {
         // Accumulate completion text
         let completionText = '';
 
+        // Resolve API endpoint
+        const api = resolveEndpoint(config.api, providerConfig, '/stream/completion');
+
         // Resolve headers and body
-        const headers = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const configHeaders = typeof config.headers === 'function' ? await config.headers() : config.headers;
+        const headers = mergeHeaders(configHeaders, providerConfig);
         const body = typeof config.body === 'function' ? await config.body() : config.body;
 
         // Create stream manager
         streamManagerRef.current = new StreamManager({
-          api: config.api,
+          api,
           protocol: 'data',
           headers,
           body: {
@@ -88,9 +95,9 @@ export function useCompletion(config: CompletionConfig): UseCompletionResult {
             prompt,
             completionId: config.id,
           },
-          credentials: config.credentials,
+          credentials: config.credentials || providerConfig.credentials,
           signal: abortControllerRef.current.signal,
-          experimental_throttle: config.experimental_throttle,
+          experimental_throttle: config.experimental_throttle ?? providerConfig.experimental_throttle,
           onEvent: (event) => {
             if (event.type === 'message-start') {
               setStatus('streaming');
@@ -148,7 +155,7 @@ export function useCompletion(config: CompletionConfig): UseCompletionResult {
         abortControllerRef.current = null;
       }
     },
-    [config]
+    [config, providerConfig]
   );
 
   /**
