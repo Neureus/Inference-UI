@@ -6,6 +6,9 @@
 import { createResponse, createErrorResponse } from './workers';
 import { handleGraphQL } from './graphql';
 import { handleEventIngestion } from './events';
+import { handleStreamChat } from './workers/stream-chat';
+import { handleStreamCompletion } from './workers/stream-completion';
+import { handleStreamObject } from './workers/stream-object';
 import type { Env } from './types';
 
 export default {
@@ -34,6 +37,15 @@ export default {
         case path === '/events' || path === '/api/events':
           return await handleEventIngestion(request, env, ctx);
 
+        case path === '/stream/chat' || path === '/api/stream/chat':
+          return await handleStreamChat(request, env);
+
+        case path === '/stream/completion' || path === '/api/stream/completion':
+          return await handleStreamCompletion(request, env);
+
+        case path === '/stream/object' || path === '/api/stream/object':
+          return await handleStreamObject(request, env);
+
         case path === '/health':
           return createResponse({ status: 'healthy', timestamp: Date.now() });
 
@@ -44,6 +56,9 @@ export default {
             endpoints: {
               graphql: '/graphql',
               events: '/events',
+              streamChat: '/stream/chat',
+              streamCompletion: '/stream/completion',
+              streamObject: '/stream/object',
               health: '/health',
             },
           });

@@ -1,0 +1,39 @@
+{
+  "name": "@inference-ui/react",
+  "version": "0.1.0",
+  "description": "React hooks for AI streaming, chat, completions, and generative UI",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "react",
+    "ai",
+    "streaming",
+    "chat",
+    "completion",
+    "generative-ui",
+    "inference"
+  ],
+  "author": "Inference UI Team",
+  "license": "MIT",
+  "dependencies": {
+    "@inference-ui/api": "^0.1.0",
+    "@inference-ui/core": "^0.1.0",
+    "@inference-ui/ai-engine": "^0.1.0",
+    "@inference-ui/events": "^0.1.0",
+    "zod": "^3.24.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "typescript": "^5.8.2",
+    "react": "^19.0.0"
+  }
+}
