@@ -1,0 +1,60 @@
+# Cloudflare Workers Configuration - PersonQL Service Binding
+# Exposes PersonQL functionality via service bindings for direct access
+# Account: FinHub
+
+name = "personql-service"
+account_id = "d9700a3fcc05a01f5d81670ebbae817d"
+main = "src-personql/index.ts"
+compatibility_date = "2024-10-01"
+workers_dev = true
+
+# Smart Placement - Automatically place worker near backend services
+# Reduces latency by running worker close to D1, KV, R2, and Workers AI
+[placement]
+mode = "smart"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "inference-ui-db"
+database_id = "4de74839-04b8-4b83-8550-578701999006"
+
+# KV for caching
+[[kv_namespaces]]
+binding = "KV"
+id = "813d5ccd33b943439c91f52b5b682372"
+
+# R2 for file storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "inference-ui-assets"
+
+# Workers AI - GPU-powered inference
+[ai]
+binding = "AI"
+
+# Analytics Engine
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+
+# Production Environment
+[env.production]
+name = "personql-service-production"
+workers_dev = false
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+# Build Configuration
+[build]
+command = "npm run build:personql"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 1

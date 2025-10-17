@@ -1,0 +1,22 @@
+# Example Consumer Worker Configuration
+# Shows how to configure service binding to PersonQL
+
+name = "personql-consumer-example"
+account_id = "d9700a3fcc05a01f5d81670ebbae817d"
+main = "index.ts"
+compatibility_date = "2024-10-01"
+workers_dev = true
+
+# Service Binding to PersonQL
+# This allows direct access to PersonQL without HTTP calls
+[[services]]
+binding = "PERSONQL"
+service = "personql-service"
+environment = "production"
+
+# Optional: Smart Placement (recommended)
+[placement]
+mode = "smart"
+
+[vars]
+ENVIRONMENT = "development"
