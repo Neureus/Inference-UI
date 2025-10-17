@@ -12,6 +12,7 @@ React hooks for AI streaming, chat, completions, and generative UI. Built on Clo
 - ✍️ **Text Completion** - Single-turn completions for autocomplete, summarization
 - 🎯 **Type-Safe Objects** - Generate structured data with Zod schema validation
 - 🧩 **Generative UI** - Render custom React components from AI tool calls
+- 🎨 **AI-Powered Components** - Pre-built forms, inputs, chat, and search with AI capabilities
 - ⚡ **Edge Inference** - Powered by Cloudflare Workers AI (180+ locations)
 - 🔒 **Privacy-First** - Works with local TFLite models or edge AI
 - 📦 **Zero Config** - Works out of the box with sensible defaults
@@ -706,6 +707,300 @@ if (error) {
       <button onClick={reload}>Retry</button>
     </div>
   );
+}
+```
+
+## AI-Powered Components
+
+Pre-built production-ready components with AI capabilities built-in.
+
+### `AIForm` - Smart Forms with AI Validation
+
+AI-powered form component with real-time validation using Zod schemas.
+
+#### Features
+- Real-time AI validation using streaming
+- Automatic error detection and helpful messages
+- Full TypeScript support with Zod schemas
+- Progressive validation on blur
+- AI-powered suggestions for field improvements
+
+#### Props
+
+```typescript
+interface AIFormProps<T extends z.ZodType> {
+  fields: AIFormField[];
+  schema: T;
+  onSubmit: (data: z.infer<T>) => void | Promise<void>;
+  submitLabel?: string;
+  aiAssisted?: boolean;
+  className?: string;
+  children?: React.ReactNode;
+}
+
+interface AIFormField {
+  name: string;
+  label: string;
+  type?: 'text' | 'email' | 'password' | 'textarea' | 'number';
+  placeholder?: string;
+  required?: boolean;
+  aiValidation?: boolean;
+  autoComplete?: string;
+}
+```
+
+#### Example
+
+```tsx
+import { AIForm } from 'inference-ui-react';
+import { z } from 'zod';
+
+const UserSchema = z.object({
+  email: z.string().email(),
+  username: z.string().min(3),
+  bio: z.string().max(500),
+});
+
+function SignupForm() {
+  return (
+    <AIForm
+      schema={UserSchema}
+      fields={[
+        { name: 'email', label: 'Email', type: 'email', required: true },
+        { name: 'username', label: 'Username', required: true },
+        { name: 'bio', label: 'Bio', type: 'textarea', aiValidation: true },
+      ]}
+      onSubmit={(data) => {
+        console.log('Validated data:', data);
+        // Submit to your API
+      }}
+      aiAssisted
+      submitLabel="Create Account"
+    />
+  );
+}
+```
+
+### `AIInput` - Smart Input with Autocomplete
+
+Intelligent input component with AI-powered autocomplete and validation.
+
+#### Features
+- Real-time autocomplete suggestions
+- Smart validation with helpful error messages
+- Debounced AI requests for performance
+- Keyboard navigation (Arrow keys, Enter, Escape)
+- Customizable suggestion rendering
+
+#### Props
+
+```typescript
+interface AIInputProps {
+  value: string;
+  onChange: (value: string) => void;
+  onSelect?: (suggestion: string) => void;
+  placeholder?: string;
+  type?: 'text' | 'email' | 'url' | 'search';
+  autocomplete?: boolean;
+  validate?: boolean;
+  debounce?: number;
+  className?: string;
+  disabled?: boolean;
+  aiPrompt?: string;
+}
+```
+
+#### Example
+
+```tsx
+import { AIInput } from 'inference-ui-react';
+
+function EmailInput() {
+  const [email, setEmail] = useState('');
+
+  return (
+    <AIInput
+      value={email}
+      onChange={setEmail}
+      type="email"
+      autocomplete
+      validate
+      placeholder="Enter your email..."
+      aiPrompt="Suggest professional email formats"
+      onSelect={(suggestion) => {
+        console.log('User selected:', suggestion);
+      }}
+    />
+  );
+}
+```
+
+### `ChatInterface` - Complete Chat UI
+
+Full-featured chat interface with streaming AI responses.
+
+#### Features
+- Real-time streaming messages
+- Auto-scroll to latest message
+- Message timestamps
+- Loading states and error handling
+- Send/stop controls
+- Message regeneration
+
+#### Props
+
+```typescript
+interface ChatInterfaceProps {
+  initialMessages?: UIMessage[];
+  placeholder?: string;
+  showTimestamps?: boolean;
+  className?: string;
+}
+```
+
+#### Example
+
+```tsx
+import { ChatInterface } from 'inference-ui-react';
+
+function CustomerSupport() {
+  return (
+    <ChatInterface
+      initialMessages={[
+        {
+          id: '1',
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Hello! How can I help you today?' }],
+          createdAt: new Date(),
+        },
+      ]}
+      placeholder="Type your question..."
+      showTimestamps
+      className="support-chat"
+    />
+  );
+}
+```
+
+### `SearchBox` - AI-Powered Search
+
+Intelligent search component with AI-generated suggestions.
+
+#### Features
+- Real-time AI-powered search suggestions
+- Semantic search understanding
+- Debounced requests for performance
+- Keyboard navigation
+- Search history
+- Custom result rendering
+
+#### Props
+
+```typescript
+interface SearchBoxProps {
+  onSearch: (query: string) => void | Promise<void>;
+  onSelect?: (result: SearchResult) => void;
+  placeholder?: string;
+  aiSuggestions?: boolean;
+  debounce?: number;
+  maxSuggestions?: number;
+  className?: string;
+  renderResult?: (result: SearchResult) => React.ReactNode;
+}
+
+interface SearchResult {
+  id: string;
+  title: string;
+  description?: string;
+  url?: string;
+  metadata?: Record<string, any>;
+}
+```
+
+#### Example
+
+```tsx
+import { SearchBox } from 'inference-ui-react';
+
+function DocSearch() {
+  const [results, setResults] = useState([]);
+
+  return (
+    <SearchBox
+      onSearch={async (query) => {
+        const results = await searchDocs(query);
+        setResults(results);
+      }}
+      onSelect={(result) => {
+        window.location.href = result.url;
+      }}
+      aiSuggestions
+      placeholder="Search documentation..."
+      maxSuggestions={5}
+    />
+  );
+}
+```
+
+### Component Styles
+
+All components include optional default styles that can be imported:
+
+```tsx
+import {
+  aiFormStyles,
+  aiInputStyles,
+  chatInterfaceStyles,
+  searchBoxStyles,
+  allComponentStyles, // All styles combined
+} from 'inference-ui-react';
+
+// Inject into your app
+function App() {
+  return (
+    <>
+      <style>{allComponentStyles}</style>
+      <YourApp />
+    </>
+  );
+}
+
+// Or import individually
+function MyForm() {
+  return (
+    <>
+      <style>{aiFormStyles}</style>
+      <AIForm {...props} />
+    </>
+  );
+}
+```
+
+Or use your own custom styles by targeting the component class names:
+
+```css
+/* Custom AIForm styles */
+.ai-form {
+  max-width: 800px;
+}
+
+.ai-form-field {
+  margin-bottom: 2rem;
+}
+
+.ai-form-input {
+  border: 2px solid #3b82f6;
+  border-radius: 8px;
+}
+
+/* Custom ChatInterface styles */
+.chat-interface {
+  height: 600px;
+}
+
+.chat-message {
+  padding: 1rem;
+  background: #f9fafb;
 }
 ```
 

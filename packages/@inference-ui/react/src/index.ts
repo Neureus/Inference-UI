@@ -17,3 +17,6 @@ export * from './hooks';
 
 // Generative UI
 export * from './generative-ui';
+
+// AI-Powered Components
+export * from './components';

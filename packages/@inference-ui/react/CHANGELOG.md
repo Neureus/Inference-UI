@@ -5,6 +5,32 @@ All notable changes to `inference-ui-react` will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2025-10-16
+
+### Added
+- **AI-Powered Components** - Four production-ready components with built-in AI capabilities:
+  - `AIForm` - Smart forms with AI validation and Zod schema support
+  - `AIInput` - Intelligent input with autocomplete suggestions and validation
+  - `ChatInterface` - Complete chat UI with streaming and auto-scroll
+  - `SearchBox` - AI-powered search with semantic suggestions and history
+- **Component Styling** - Optional default styles exported for all components
+  - Individual style exports: `aiFormStyles`, `aiInputStyles`, etc.
+  - Combined export: `allComponentStyles`
+  - Full customization support with CSS class names
+- **Enhanced Features**:
+  - Real-time autocomplete with debouncing
+  - Keyboard navigation (Arrow keys, Enter, Escape)
+  - Progressive AI validation on blur
+  - Automatic message timestamps
+  - Search history with local storage
+  - Loading and error states
+
+### Documentation
+- Comprehensive AI Components section in README
+- Full API documentation for all components
+- Code examples for each component
+- Styling guide with customization options
+
 ## [0.2.0] - 2025-10-16
 
 ### Added

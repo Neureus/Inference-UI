@@ -29,6 +29,38 @@ Collection of example code demonstrating Inference UI's AI-native features.
 
 **Perfect for:** Learning how all packages work together, understanding the complete architecture, building production applications.
 
+## AI Components Demo (⭐ NEW)
+
+### ai-components-demo.tsx
+**Complete showcase of all AI-powered components** - demonstrates production-ready components with built-in AI capabilities:
+
+**Featured Components:**
+- 🎨 **AIForm** - Smart forms with AI validation and Zod schemas
+- 📝 **AIInput** - Intelligent input with autocomplete suggestions
+- 💬 **ChatInterface** - Complete chat UI with streaming responses
+- 🔍 **SearchBox** - AI-powered search with semantic suggestions
+
+**8 Complete Examples:**
+1. **User Registration Form** - Smart validation with AI assistance
+2. **Product Feedback Form** - Complex multi-field forms
+3. **Email Autocomplete** - Intelligent email suggestions
+4. **Search Query Input** - Search autocomplete with debouncing
+5. **Customer Support Chat** - Full chat with initial messages
+6. **AI Assistant Chat** - Fresh conversation interface
+7. **Documentation Search** - Search with AI suggestions
+8. **Product Search** - E-commerce search with filtering
+
+**Demonstrates:**
+- Real-time AI autocomplete with debouncing
+- Progressive validation on blur
+- Keyboard navigation (Arrow keys, Enter, Escape)
+- Streaming chat with auto-scroll
+- Search history and suggestions
+- Custom styling and theming
+- Error handling and loading states
+
+**Perfect for:** Learning component APIs, building AI-powered UIs, understanding best practices.
+
 ## React Streaming Examples
 
 ### chat-app.tsx
