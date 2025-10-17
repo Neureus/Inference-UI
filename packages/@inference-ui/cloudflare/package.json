@@ -6,11 +6,16 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
+    "build:streaming": "tsc --project tsconfig.streaming.json",
+    "build:all": "npm run build && npm run build:streaming",
     "dev": "wrangler dev",
+    "dev:streaming": "wrangler dev --config wrangler-streaming.toml",
     "deploy": "wrangler deploy",
+    "deploy:streaming": "wrangler deploy --config wrangler-streaming.toml",
+    "deploy:all": "npm run deploy:streaming && npm run deploy",
     "test": "jest --passWithNoTests",
-    "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "lint": "eslint src src-streaming --ext .ts,.tsx",
+    "typecheck": "tsc --noEmit && tsc --noEmit --project tsconfig.streaming.json"
   },
   "keywords": ["cloudflare", "workers", "d1", "r2", "workers-ai"],
   "author": "Liquid UI Team",

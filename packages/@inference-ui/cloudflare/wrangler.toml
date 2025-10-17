@@ -27,9 +27,11 @@ id = "a9cf26e3f5104521b279b245adaa2801"
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 
-# Workers AI
-[ai]
-binding = "AI"
+# Service Bindings - Worker-to-Worker Communication
+[[services]]
+binding = "STREAMING"
+service = "inference-ui-streaming"
+environment = "production"
 
 # Environment Variables
 [vars]

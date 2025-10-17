@@ -1,0 +1,50 @@
+# Cloudflare Workers Configuration - Streaming Worker
+# Dedicated worker for AI streaming responses
+# Called via service binding from main API worker
+
+name = "inference-ui-streaming"
+account_id = "2bba1309281bf805590ca30d4e49adb0"
+main = "src-streaming/index.ts"
+compatibility_date = "2024-10-01"
+workers_dev = true
+
+# Workers AI - GPU-powered inference
+[ai]
+binding = "AI"
+
+# KV for response caching
+[[kv_namespaces]]
+binding = "KV"
+id = "a9cf26e3f5104521b279b245adaa2801"
+
+# D1 for usage tracking
+[[d1_databases]]
+binding = "DB"
+database_name = "inference-ui-db"
+database_id = "47fd4ca8-72b1-44be-b310-53feb2e0a101"
+
+# Analytics for performance metrics
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+
+# Production Environment
+[env.production]
+name = "inference-ui-streaming-production"
+workers_dev = false
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+# Build Configuration
+[build]
+command = "npm run build:streaming"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 1

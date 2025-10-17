@@ -6,9 +6,6 @@
 import { createResponse, createErrorResponse } from './workers';
 import { handleGraphQL } from './graphql';
 import { handleEventIngestion } from './events';
-import { handleStreamChat } from './workers/stream-chat';
-import { handleStreamCompletion } from './workers/stream-completion';
-import { handleStreamObject } from './workers/stream-object';
 import type { Env } from './types';
 
 export default {
@@ -37,14 +34,17 @@ export default {
         case path === '/events' || path === '/api/events':
           return await handleEventIngestion(request, env, ctx);
 
-        case path === '/stream/chat' || path === '/api/stream/chat':
-          return await handleStreamChat(request, env);
+        // Stream endpoints - Route to streaming worker via service binding
+        case path.startsWith('/stream/') || path.startsWith('/api/stream/'):
+          const streamPath = path.replace('/stream', '').replace('/api/stream', '');
+          const streamUrl = new URL(streamPath, request.url);
 
-        case path === '/stream/completion' || path === '/api/stream/completion':
-          return await handleStreamCompletion(request, env);
-
-        case path === '/stream/object' || path === '/api/stream/object':
-          return await handleStreamObject(request, env);
+          // Forward to streaming worker (0ms latency via service binding)
+          return await env.STREAMING.fetch(streamUrl, {
+            method: request.method,
+            headers: request.headers,
+            body: request.body,
+          });
 
         case path === '/health':
           return createResponse({ status: 'healthy', timestamp: Date.now() });
@@ -53,12 +53,13 @@ export default {
           return createResponse({
             name: 'Inference UI API',
             version: env.API_VERSION || 'v1',
+            architecture: 'service-bindings',
             endpoints: {
               graphql: '/graphql',
               events: '/events',
-              streamChat: '/stream/chat',
-              streamCompletion: '/stream/completion',
-              streamObject: '/stream/object',
+              streamChat: '/stream/chat (→ streaming worker)',
+              streamCompletion: '/stream/completion (→ streaming worker)',
+              streamObject: '/stream/object (→ streaming worker)',
               health: '/health',
             },
           });

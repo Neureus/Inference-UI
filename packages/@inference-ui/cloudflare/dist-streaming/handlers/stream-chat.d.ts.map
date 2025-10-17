@@ -1,0 +1,1 @@
+{"version":3,"file":"stream-chat.d.ts","sourceRoot":"","sources":["../../src-streaming/handlers/stream-chat.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,OAAO,KAAK,EAAE,YAAY,EAAe,MAAM,UAAU,CAAC;AAG1D;;;GAGG;AACH,wBAAsB,gBAAgB,CACpC,OAAO,EAAE,OAAO,EAChB,GAAG,EAAE,YAAY,EACjB,GAAG,EAAE,gBAAgB,GACpB,OAAO,CAAC,QAAQ,CAAC,CAmLnB"}
