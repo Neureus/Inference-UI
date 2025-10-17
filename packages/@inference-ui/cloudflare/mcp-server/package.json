@@ -1,0 +1,38 @@
+{
+  "name": "@inference-ui/mcp-server",
+  "version": "0.1.0",
+  "description": "Model Context Protocol (MCP) server for Inference UI - enables AI assistants to interact with Inference UI's GraphQL API, event intelligence, and AI streaming capabilities",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "inference-ui-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "start": "node dist/index.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "inference-ui",
+    "ai",
+    "graphql",
+    "cloudflare",
+    "workers"
+  ],
+  "author": "Inference UI",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.2",
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

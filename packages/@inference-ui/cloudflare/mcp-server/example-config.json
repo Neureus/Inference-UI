@@ -1,0 +1,15 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/mcp-server-config.json",
+  "mcpServers": {
+    "inference-ui": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/inference-ui/mcp-server/dist/index.js"
+      ],
+      "env": {
+        "INFERENCE_UI_API_URL": "https://inference-ui-api.finhub.workers.dev",
+        "INFERENCE_UI_API_KEY": "your-api-key-here-optional"
+      }
+    }
+  }
+}
