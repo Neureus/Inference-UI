@@ -1,20 +1,13 @@
 /**
  * Inference UI - Cloudflare Workers Main Entry Point
- * GraphQL API for AI-native UI library
+ * HTTP API router for GraphQL and events
+ * Service binding RPC methods are in inference-service worker
  */
 
 import { createResponse, createErrorResponse } from './workers';
 import { handleGraphQL } from './graphql';
 import { handleEventIngestion } from './events';
 import type { Env } from './types';
-import type {
-  InferenceUIGraphQLRequest,
-  InferenceUIEventRequest,
-  InferenceUIBatchEventRequest,
-  InferenceUIChatRequest,
-  InferenceUICompletionRequest,
-  InferenceUIObjectRequest,
-} from './types/service-bindings';
 
 export default {
   async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
@@ -89,138 +82,5 @@ export default {
     // Process aggregated analytics
     console.log('Running scheduled task:', controller.scheduledTime);
     // TODO: Implement scheduled analytics processing
-  },
-
-  /**
-   * Service Binding RPC Methods
-   *
-   * These methods are callable directly from other workers via service bindings
-   */
-
-  /**
-   * Execute GraphQL query via service binding
-   */
-  async graphql(
-    request: InferenceUIGraphQLRequest,
-    env: Env,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    // Create a fake Request object for the GraphQL handler
-    const graphqlRequest = new Request('http://internal/graphql', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-
-    return await handleGraphQL(graphqlRequest, env, ctx);
-  },
-
-  /**
-   * Ingest single event via service binding
-   */
-  async ingestEvent(
-    request: InferenceUIEventRequest,
-    env: Env,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    // Create a fake Request object for the event handler
-    const eventRequest = new Request('http://internal/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ events: [request] }),
-    });
-
-    return await handleEventIngestion(eventRequest, env, ctx);
-  },
-
-  /**
-   * Ingest batch of events via service binding
-   */
-  async ingestBatch(
-    request: InferenceUIBatchEventRequest,
-    env: Env,
-    ctx: ExecutionContext
-  ): Promise<Response> {
-    // Create a fake Request object for the event handler
-    const eventRequest = new Request('http://internal/events', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-
-    return await handleEventIngestion(eventRequest, env, ctx);
-  },
-
-  /**
-   * Stream chat completion via service binding
-   */
-  async streamChat(
-    request: InferenceUIChatRequest,
-    env: Env,
-    _ctx: ExecutionContext
-  ): Promise<Response> {
-    // Forward to streaming worker via service binding
-    const streamRequest = new Request('http://internal/chat', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-
-    return await env.STREAMING.fetch(streamRequest);
-  },
-
-  /**
-   * Stream text completion via service binding
-   */
-  async streamCompletion(
-    request: InferenceUICompletionRequest,
-    env: Env,
-    _ctx: ExecutionContext
-  ): Promise<Response> {
-    // Forward to streaming worker via service binding
-    const streamRequest = new Request('http://internal/completion', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-
-    return await env.STREAMING.fetch(streamRequest);
-  },
-
-  /**
-   * Stream object generation via service binding
-   */
-  async streamObject(
-    request: InferenceUIObjectRequest,
-    env: Env,
-    _ctx: ExecutionContext
-  ): Promise<Response> {
-    // Forward to streaming worker via service binding
-    const streamRequest = new Request('http://internal/object', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(request),
-    });
-
-    return await env.STREAMING.fetch(streamRequest);
-  },
-
-  /**
-   * Health check via service binding
-   */
-  async health(): Promise<Response> {
-    return createResponse({ status: 'healthy', timestamp: Date.now() });
   },
 };

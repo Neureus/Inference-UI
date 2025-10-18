@@ -1,0 +1,63 @@
+# Cloudflare Workers Configuration - Inference Service Worker
+# Service bindings worker providing RPC methods for GraphQL, events, and streaming
+# Called via service binding from other workers
+# Account: FinHub
+
+name = "inference-ui-service"
+account_id = "d9700a3fcc05a01f5d81670ebbae817d"
+main = "src-inference-service/index.ts"
+compatibility_date = "2024-10-01"
+workers_dev = true
+
+# Smart Placement - Automatically place worker near backend services
+# Reduces latency by running worker close to D1, R2, KV, and service bindings
+[placement]
+mode = "smart"
+
+# D1 Database
+[[d1_databases]]
+binding = "DB"
+database_name = "inference-ui-db"
+database_id = "4de74839-04b8-4b83-8550-578701999006"
+
+# R2 Storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "inference-ui-assets"
+
+# KV Namespace
+[[kv_namespaces]]
+binding = "KV"
+id = "813d5ccd33b943439c91f52b5b682372"
+
+# Analytics Engine
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Service Bindings - Worker-to-Worker Communication
+[[services]]
+binding = "STREAMING"
+service = "inference-ui-streaming"
+environment = "production"
+
+# Environment Variables
+[vars]
+ENVIRONMENT = "development"
+API_VERSION = "v1"
+
+# Production Environment
+[env.production]
+name = "inference-ui-service-production"
+workers_dev = false
+
+[env.production.vars]
+ENVIRONMENT = "production"
+
+# Build Configuration
+[build]
+command = "npm run build:inference-service"
+
+# Observability
+[observability]
+enabled = true
+head_sampling_rate = 1
