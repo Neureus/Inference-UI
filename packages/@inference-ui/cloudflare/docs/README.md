@@ -66,6 +66,18 @@ Choose your integration approach:
 - Multi-tenant applications
 - Best practices and patterns
 
+**[Multi-Tenant Architecture](MULTI-TENANT-GUIDE.md)** 🏢
+- Tenant identification with service bindings
+- Implementation patterns and wrappers
+- Security and data isolation
+- Complete SaaS examples
+
+**[Service Bindings Authentication](SERVICE-BINDINGS-AUTHENTICATION.md)** 🔐
+- Authentication flow without HTTP headers
+- JWT, API keys, sessions, subdomains
+- Two-layer security model
+- Trust and responsibility boundaries
+
 **[Troubleshooting Guide](TROUBLESHOOTING.md)** 🔧
 - Common issues and solutions
 - MCP server problems
