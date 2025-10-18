@@ -7,6 +7,8 @@ import { D1DatabaseAdapter } from '../adapters/d1-database';
 import { getTierLimits } from '../config/tier-limits';
 import { UserTier } from '@inference-ui/api';
 import { enforceFlowLimit, enforceEventLimit, trackEventUsage } from '../middleware/usage-tracker';
+import { AnalyticsService } from '../services/analytics-service';
+import { KVCacheAdapter } from '../adapters/kv-cache';
 
 export interface Context {
   env: Env;
@@ -138,6 +140,73 @@ export const resolvers = {
         },
         dataRetentionDays: limits.dataRetentionDays,
       };
+    },
+
+    eventMetrics: async (_parent: unknown, args: { timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const analytics = new AnalyticsService(db, undefined, cache);
+
+      return await analytics.getEventMetrics(context.userId, args.timeRange);
+    },
+
+    flowMetrics: async (_parent: unknown, args: { flowId: string; timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const analytics = new AnalyticsService(db, undefined, cache);
+
+      return await analytics.getFlowMetrics(args.flowId, args.timeRange);
+    },
+
+    sessionMetrics: async (_parent: unknown, args: { timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const analytics = new AnalyticsService(db, undefined, cache);
+
+      return await analytics.getSessionMetrics(context.userId, args.timeRange);
+    },
+
+    componentAnalytics: async (_parent: unknown, args: { component: string; timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const analytics = new AnalyticsService(db, undefined, cache);
+
+      return await analytics.getComponentAnalytics(context.userId, args.component, args.timeRange);
+    },
+
+    trendAnalysis: async (
+      _parent: unknown,
+      args: { metric: string; timeRange: { start: string; end: string }; groupBy?: string },
+      context: Context
+    ) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const analytics = new AnalyticsService(db, undefined, cache);
+
+      const metric = args.metric.toLowerCase() as 'events' | 'sessions' | 'flows';
+      const groupBy = (args.groupBy?.toLowerCase() || 'day') as 'hour' | 'day' | 'week' | 'month';
+
+      return await analytics.getTrendAnalysis(context.userId, metric, args.timeRange, groupBy);
     },
   },
 
