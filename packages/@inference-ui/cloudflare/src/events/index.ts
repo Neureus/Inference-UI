@@ -11,6 +11,7 @@ import {
   AnalyticsEngineAdapter,
   WorkersAIAdapter,
 } from '../adapters';
+import { enforceEventLimit, trackEventUsage, parseUsageLimitError } from '../middleware/usage-tracker';
 
 export async function handleEventIngestion(
   request: Request,
@@ -25,9 +26,29 @@ export async function handleEventIngestion(
     const body = await request.json();
     const events = Array.isArray(body) ? body : [body];
 
+    // Create database adapter
+    const database = new D1DatabaseAdapter(env.DB);
+
+    // Check tier limits for authenticated users before processing
+    // Extract userId from first event (assuming batch is from same user)
+    const userId = events[0]?.userId;
+
+    if (userId) {
+      try {
+        await enforceEventLimit(database, userId);
+      } catch (error) {
+        // Check if it's a usage limit error
+        const limitError = parseUsageLimitError(error);
+        if (limitError) {
+          return createResponse(limitError, 429);
+        }
+        throw error;
+      }
+    }
+
     // Create event processor with Cloudflare adapters
     const processor = new EventProcessor({
-      database: new D1DatabaseAdapter(env.DB),
+      database,
       analytics: env.ANALYTICS ? new AnalyticsEngineAdapter(env.ANALYTICS) : undefined,
       ai: env.AI ? new WorkersAIAdapter(env.AI) : undefined,
       useAI: env.ENVIRONMENT === 'production' && false, // Disabled by default
@@ -36,6 +57,11 @@ export async function handleEventIngestion(
     // Process events in batch
     const result = await processor.processBatch(events as IncomingEvent[]);
 
+    // Track usage for authenticated users after successful processing
+    if (userId && result.processed > 0) {
+      await trackEventUsage(database, userId, result.processed);
+    }
+
     return createResponse({
       processed: result.processed,
       errors: result.errors,
@@ -43,6 +69,13 @@ export async function handleEventIngestion(
     });
   } catch (error) {
     console.error('Event ingestion error:', error);
+
+    // Check if it's a usage limit error
+    const limitError = parseUsageLimitError(error);
+    if (limitError) {
+      return createResponse(limitError, 429);
+    }
+
     return createErrorResponse(
       error instanceof Error ? error.message : 'Event ingestion failed',
       500

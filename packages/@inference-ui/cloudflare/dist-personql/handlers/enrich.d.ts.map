@@ -1,0 +1,1 @@
+{"version":3,"file":"enrich.d.ts","sourceRoot":"","sources":["../../src-personql/handlers/enrich.ts"],"names":[],"mappings":"AAAA;;;GAGG;AAEH,OAAO,KAAK,EAAE,WAAW,EAAE,iBAAiB,EAA8B,MAAM,UAAU,CAAC;AAE3F;;GAEG;AACH,wBAAsB,YAAY,CAChC,OAAO,EAAE,iBAAiB,EAC1B,GAAG,EAAE,WAAW,EAChB,GAAG,EAAE,gBAAgB,GACpB,OAAO,CAAC,QAAQ,CAAC,CAwDnB"}

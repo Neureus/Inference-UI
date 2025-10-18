@@ -23,6 +23,16 @@ export const schema = `
     Get analytics for a flow
     """
     flowAnalytics(flowId: ID!, timeRange: TimeRange!): FlowAnalytics
+
+    """
+    Get detailed usage metrics with limits and warnings
+    """
+    usageMetrics: UsageMetrics!
+
+    """
+    Get tier limits and current usage percentages
+    """
+    tierLimits: TierLimits!
   }
 
   type Mutation {
@@ -66,6 +76,54 @@ export const schema = `
     eventsThisMonth: Int!
     flowsCount: Int!
     aiRequestsThisMonth: Int!
+  }
+
+  type UsageMetrics {
+    usage: Usage!
+    limits: UsageLimits!
+    warnings: UsageWarnings!
+    percentages: UsagePercentages!
+  }
+
+  type UsageLimits {
+    eventsPerMonth: Int!
+    maxFlows: Int!
+    aiRequestsPerMonth: Int!
+  }
+
+  type UsageWarnings {
+    events: WarningLevel!
+    flows: WarningLevel!
+    aiRequests: WarningLevel!
+  }
+
+  type UsagePercentages {
+    events: Float!
+    flows: Float!
+    aiRequests: Float!
+  }
+
+  enum WarningLevel {
+    OK
+    WARNING
+    CRITICAL
+    EXCEEDED
+  }
+
+  type TierLimits {
+    tier: UserTier!
+    limits: UsageLimits!
+    features: TierFeatures!
+    dataRetentionDays: Int!
+  }
+
+  type TierFeatures {
+    basicMetrics: Boolean!
+    advancedAnalytics: Boolean!
+    aiInsights: Boolean!
+    customDashboards: Boolean!
+    dataExport: Boolean!
+    realTimeAnalytics: Boolean!
   }
 
   type Flow {

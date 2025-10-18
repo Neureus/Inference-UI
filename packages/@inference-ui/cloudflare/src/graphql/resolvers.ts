@@ -3,6 +3,10 @@
  */
 
 import type { Env } from '../types';
+import { D1DatabaseAdapter } from '../adapters/d1-database';
+import { getTierLimits } from '../config/tier-limits';
+import { UserTier } from '@inference-ui/api';
+import { enforceFlowLimit, enforceEventLimit, trackEventUsage } from '../middleware/usage-tracker';
 
 export interface Context {
   env: Env;
@@ -74,6 +78,67 @@ export const resolvers = {
         totalSessions: 0,
       };
     },
+
+    usageMetrics: async (_parent: unknown, _args: unknown, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const metrics = await db.getUserUsageWithLimits(context.userId);
+
+      return {
+        usage: metrics.usage,
+        limits: {
+          eventsPerMonth: metrics.limits.eventsPerMonth,
+          maxFlows: metrics.limits.maxFlows,
+          aiRequestsPerMonth: metrics.limits.aiRequestsPerMonth,
+        },
+        warnings: {
+          events: metrics.warnings.events.toUpperCase(),
+          flows: metrics.warnings.flows.toUpperCase(),
+          aiRequests: metrics.warnings.aiRequests.toUpperCase(),
+        },
+        percentages: {
+          events: metrics.percentages.events,
+          flows: metrics.percentages.flows,
+          aiRequests: metrics.percentages.aiRequests,
+        },
+      };
+    },
+
+    tierLimits: async (_parent: unknown, _args: unknown, context: Context) => {
+      if (!context.userId) {
+        throw new Error('Authentication required');
+      }
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const user = await db.getUserById(context.userId);
+
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      const limits = getTierLimits(user.tier as UserTier);
+
+      return {
+        tier: user.tier.toUpperCase(),
+        limits: {
+          eventsPerMonth: limits.eventsPerMonth,
+          maxFlows: limits.maxFlows,
+          aiRequestsPerMonth: limits.aiRequestsPerMonth,
+        },
+        features: {
+          basicMetrics: limits.analyticsFeatures.basicMetrics,
+          advancedAnalytics: limits.analyticsFeatures.advancedAnalytics,
+          aiInsights: limits.analyticsFeatures.aiInsights,
+          customDashboards: limits.analyticsFeatures.customDashboards,
+          dataExport: limits.analyticsFeatures.dataExport,
+          realTimeAnalytics: limits.analyticsFeatures.realTimeAnalytics,
+        },
+        dataRetentionDays: limits.dataRetentionDays,
+      };
+    },
   },
 
   Mutation: {
@@ -81,6 +146,10 @@ export const resolvers = {
       if (!context.userId) {
         throw new Error('Authentication required');
       }
+
+      // Check tier limits before creating flow
+      const db = new D1DatabaseAdapter(context.env.DB);
+      await enforceFlowLimit(db, context.userId);
 
       const id = crypto.randomUUID();
       const now = Math.floor(Date.now() / 1000);
@@ -180,6 +249,11 @@ export const resolvers = {
     },
 
     trackEvent: async (_parent: unknown, args: { input: any }, context: Context) => {
+      const db = new D1DatabaseAdapter(context.env.DB);
+
+      // Check tier limits for authenticated users
+      await enforceEventLimit(db, context.userId);
+
       // Use the event ingestion handler
       const event = {
         id: crypto.randomUUID(),
@@ -202,6 +276,9 @@ export const resolvers = {
         ],
         doubles: [event.timestamp, 1],
       });
+
+      // Track usage for authenticated users
+      await trackEventUsage(db, context.userId);
 
       return true;
     },

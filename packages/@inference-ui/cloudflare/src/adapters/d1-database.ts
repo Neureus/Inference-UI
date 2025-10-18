@@ -14,7 +14,9 @@ import type {
   FlowAnalytics,
   TimeRange,
   Usage,
+  UserTier,
 } from '@inference-ui/api';
+import { getTierLimits, isWithinLimit, getUsagePercentage, getWarningLevel } from '../config/tier-limits';
 
 export class D1DatabaseAdapter implements DatabaseAdapter {
   constructor(private db: D1Database) {}
@@ -258,14 +260,14 @@ export class D1DatabaseAdapter implements DatabaseAdapter {
   }
 
   async getUserUsage(userId: string): Promise<Usage> {
-    // Count events this month
-    const startOfMonth = Math.floor(
-      new Date(new Date().getFullYear(), new Date().getMonth(), 1).getTime() / 1000
-    );
+    // Get current month in YYYY-MM format
+    const now = new Date();
+    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    const eventsResult = await this.db
-      .prepare('SELECT COUNT(*) as count FROM events WHERE user_id = ? AND created_at >= ?')
-      .bind(userId, startOfMonth)
+    // Get usage from usage table
+    const usageResult = await this.db
+      .prepare('SELECT * FROM usage WHERE user_id = ? AND month = ?')
+      .bind(userId, month)
       .first();
 
     const flowsResult = await this.db
@@ -274,9 +276,144 @@ export class D1DatabaseAdapter implements DatabaseAdapter {
       .first();
 
     return {
-      eventsThisMonth: (eventsResult as any)?.count || 0,
+      eventsThisMonth: (usageResult as any)?.events_count || 0,
       flowsCount: (flowsResult as any)?.count || 0,
-      aiRequestsThisMonth: 0, // TODO: Track AI requests
+      aiRequestsThisMonth: (usageResult as any)?.ai_requests_count || 0,
+    };
+  }
+
+  /**
+   * Increment usage counters for a user
+   */
+  async incrementUsage(
+    userId: string,
+    type: 'events' | 'ai_requests',
+    count: number = 1
+  ): Promise<void> {
+    const now = new Date();
+    const month = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const timestamp = Math.floor(Date.now() / 1000);
+
+    const column = type === 'events' ? 'events_count' : 'ai_requests_count';
+
+    // Upsert usage record
+    await this.db
+      .prepare(
+        `INSERT INTO usage (user_id, month, ${column}, updated_at)
+         VALUES (?, ?, ?, ?)
+         ON CONFLICT(user_id, month) DO UPDATE SET
+         ${column} = ${column} + ?,
+         updated_at = ?`
+      )
+      .bind(userId, month, count, timestamp, count, timestamp)
+      .run();
+  }
+
+  /**
+   * Check if user is within tier limits
+   */
+  async checkTierLimits(
+    userId: string,
+    type: 'events' | 'ai_requests' | 'flows' | 'dashboards'
+  ): Promise<{ allowed: boolean; message?: string; current: number; limit: number }> {
+    // Get user to check tier
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const limits = getTierLimits(user.tier as UserTier);
+    const usage = await this.getUserUsage(userId);
+
+    let current: number;
+    let limit: number;
+
+    switch (type) {
+      case 'events':
+        current = usage.eventsThisMonth;
+        limit = limits.eventsPerMonth;
+        break;
+      case 'ai_requests':
+        current = usage.aiRequestsThisMonth;
+        limit = limits.aiRequestsPerMonth;
+        break;
+      case 'flows':
+        current = usage.flowsCount;
+        limit = limits.maxFlows;
+        break;
+      case 'dashboards':
+        // Will be implemented in Phase 5
+        current = 0;
+        limit = limits.maxDashboards;
+        break;
+      default:
+        throw new Error(`Unknown usage type: ${type}`);
+    }
+
+    const allowed = isWithinLimit(current, limit);
+
+    if (!allowed) {
+      const limitText = limit === -1 ? 'unlimited' : limit.toString();
+      return {
+        allowed: false,
+        message: `${type} limit exceeded. Current: ${current}, Limit: ${limitText}. Please upgrade your plan.`,
+        current,
+        limit,
+      };
+    }
+
+    return { allowed: true, current, limit };
+  }
+
+  /**
+   * Get detailed usage metrics with limits and warnings
+   */
+  async getUserUsageWithLimits(userId: string): Promise<{
+    usage: Usage;
+    limits: {
+      eventsPerMonth: number;
+      maxFlows: number;
+      aiRequestsPerMonth: number;
+    };
+    warnings: {
+      events: 'ok' | 'warning' | 'critical' | 'exceeded';
+      flows: 'ok' | 'warning' | 'critical' | 'exceeded';
+      aiRequests: 'ok' | 'warning' | 'critical' | 'exceeded';
+    };
+    percentages: {
+      events: number;
+      flows: number;
+      aiRequests: number;
+    };
+  }> {
+    const user = await this.getUserById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const usage = await this.getUserUsage(userId);
+    const tierLimits = getTierLimits(user.tier as UserTier);
+
+    return {
+      usage,
+      limits: {
+        eventsPerMonth: tierLimits.eventsPerMonth,
+        maxFlows: tierLimits.maxFlows,
+        aiRequestsPerMonth: tierLimits.aiRequestsPerMonth,
+      },
+      warnings: {
+        events: getWarningLevel(usage.eventsThisMonth, tierLimits.eventsPerMonth),
+        flows: getWarningLevel(usage.flowsCount, tierLimits.maxFlows),
+        aiRequests: getWarningLevel(usage.aiRequestsThisMonth, tierLimits.aiRequestsPerMonth),
+      },
+      percentages: {
+        events: getUsagePercentage(usage.eventsThisMonth, tierLimits.eventsPerMonth),
+        flows: getUsagePercentage(usage.flowsCount, tierLimits.maxFlows),
+        aiRequests: getUsagePercentage(
+          usage.aiRequestsThisMonth,
+          tierLimits.aiRequestsPerMonth
+        ),
+      },
     };
   }
 

@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../../src-personql/types/index.ts"],"names":[],"mappings":"AAAA;;;;;GAKG;AA4UH;;GAEG;AACH,MAAM,UAAU,iBAAiB,CAAC,GAAY;IAC5C,OAAO,CACL,OAAO,GAAG,KAAK,QAAQ;QACvB,GAAG,KAAK,IAAI;QACZ,OAAO,IAAI,GAAG;QACd,QAAQ,IAAI,GAAG;QACf,QAAQ,IAAI,GAAG;QACf,OAAO,IAAI,GAAG;QACd,QAAQ,IAAI,GAAG,CAChB,CAAC;AACJ,CAAC"}
