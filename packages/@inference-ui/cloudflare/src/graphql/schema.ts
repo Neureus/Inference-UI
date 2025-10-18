@@ -319,4 +319,273 @@ export const schema = `
   }
 
   scalar JSON
+
+  # Advanced Analytics (Phase 3)
+
+  """
+  Funnel analysis queries
+  """
+  extend type Query {
+    funnel(id: ID!): Funnel
+    userFunnels: [Funnel!]!
+    analyzeFunnel(funnelId: ID!, timeRange: TimeRangeInput!): FunnelAnalysis!
+    funnelInsights(funnelId: ID!, timeRange: TimeRangeInput!): FunnelInsights!
+  }
+
+  """
+  Cohort analysis queries
+  """
+  extend type Query {
+    cohort(id: ID!): Cohort
+    userCohorts: [Cohort!]!
+    cohortSize(cohortId: ID!, timeRange: TimeRangeInput): CohortSize!
+    cohortRetention(cohortId: ID!, periodType: PeriodType, maxPeriods: Int): CohortRetention!
+    compareCohorts(cohortIds: [ID!]!, periodType: PeriodType): CohortComparison!
+  }
+
+  """
+  Attribution analysis queries
+  """
+  extend type Query {
+    attributionAnalysis(timeRange: TimeRangeInput!, model: AttributionModel, groupBy: AttributionGroupBy): [AttributionResult!]!
+    conversionSummary(timeRange: TimeRangeInput!): ConversionSummary!
+    topConvertingPaths(timeRange: TimeRangeInput!, limit: Int): [ConvertingPath!]!
+    attributionModels: [AttributionModelInfo!]!
+  }
+
+  """
+  Funnel and cohort mutations
+  """
+  extend type Mutation {
+    createFunnel(input: CreateFunnelInput!): Funnel!
+    deleteFunnel(id: ID!): Boolean!
+    createCohort(input: CreateCohortInput!): Cohort!
+    deleteCohort(id: ID!): Boolean!
+    trackConversion(input: TrackConversionInput!): Conversion!
+  }
+
+  # Funnel Types
+
+  type Funnel {
+    id: ID!
+    name: String!
+    description: String
+    steps: [FunnelStep!]!
+    flowId: String
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type FunnelStep {
+    id: ID!
+    name: String!
+    event: String
+    component: String
+    orderIndex: Int!
+  }
+
+  type FunnelAnalysis {
+    funnelId: ID!
+    funnelName: String!
+    timeRange: TimeRangeOutput!
+    totalEntered: Int!
+    totalCompleted: Int!
+    overallConversion: Float!
+    averageCompletionTime: Float!
+    steps: [FunnelStepAnalysis!]!
+    bottleneckStepId: String
+  }
+
+  type FunnelStepAnalysis {
+    stepId: ID!
+    stepName: String!
+    orderIndex: Int!
+    totalUsers: Int!
+    conversionFromPrevious: Float!
+    conversionFromStart: Float!
+    dropoffCount: Int!
+    dropoffRate: Float!
+    averageTimeFromPrevious: Float!
+    averageTimeFromStart: Float!
+  }
+
+  type FunnelInsights {
+    conversionRate: Float!
+    dropoffRate: Float!
+    bottleneckStep: String
+    averageTime: Float!
+    totalUsers: Int!
+  }
+
+  input CreateFunnelInput {
+    name: String!
+    description: String
+    steps: [FunnelStepInput!]!
+    flowId: String
+  }
+
+  input FunnelStepInput {
+    name: String!
+    event: String
+    component: String
+    orderIndex: Int!
+  }
+
+  # Cohort Types
+
+  type Cohort {
+    id: ID!
+    name: String!
+    description: String
+    criteria: CohortCriteria!
+    createdAt: String!
+    updatedAt: String!
+  }
+
+  type CohortCriteria {
+    type: CohortType!
+    startDate: String
+    endDate: String
+    event: String
+    component: String
+    properties: JSON
+  }
+
+  enum CohortType {
+    SIGNUP_DATE
+    FIRST_EVENT
+    CUSTOM
+  }
+
+  type CohortSize {
+    total: Int!
+    active: Int!
+    inactive: Int!
+  }
+
+  type CohortRetention {
+    cohortId: ID!
+    cohortName: String!
+    cohortSize: Int!
+    periodType: PeriodType!
+    startDate: String!
+    periods: [RetentionPeriod!]!
+    averageRetention: Float!
+    lifetimeValue: Float
+  }
+
+  type RetentionPeriod {
+    periodIndex: Int!
+    periodLabel: String!
+    retained: Int!
+    retentionRate: Float!
+    churnedCount: Int!
+    churnRate: Float!
+  }
+
+  enum PeriodType {
+    DAY
+    WEEK
+    MONTH
+  }
+
+  type CohortComparison {
+    cohorts: [CohortSummary!]!
+    bestPerforming: ID!
+    worstPerforming: ID!
+  }
+
+  type CohortSummary {
+    id: ID!
+    name: String!
+    size: Int!
+    retentionRate: Float!
+    churnRate: Float!
+  }
+
+  input CreateCohortInput {
+    name: String!
+    description: String
+    criteria: CohortCriteriaInput!
+  }
+
+  input CohortCriteriaInput {
+    type: CohortType!
+    startDate: String
+    endDate: String
+    event: String
+    component: String
+    properties: JSON
+  }
+
+  # Attribution Types
+
+  type AttributionResult {
+    source: String!
+    conversions: Int!
+    totalValue: Float!
+    averageValue: Float!
+    attribution: AttributionBreakdown!
+  }
+
+  type AttributionBreakdown {
+    firstTouch: Float!
+    lastTouch: Float!
+    linear: Float!
+    timeDecay: Float!
+  }
+
+  enum AttributionModel {
+    FIRST_TOUCH
+    LAST_TOUCH
+    LINEAR
+    TIME_DECAY
+    POSITION_BASED
+  }
+
+  enum AttributionGroupBy {
+    SOURCE
+    MEDIUM
+    CAMPAIGN
+    COMPONENT
+  }
+
+  type ConversionSummary {
+    totalConversions: Int!
+    uniqueConverters: Int!
+    totalValue: Float!
+    averageValue: Float!
+  }
+
+  type ConvertingPath {
+    path: String!
+    conversions: Int!
+    totalValue: Float!
+  }
+
+  type Conversion {
+    id: ID!
+    userId: String!
+    sessionId: String!
+    event: String!
+    value: Float
+    timestamp: Float!
+    metadata: JSON
+  }
+
+  type AttributionModelInfo {
+    type: AttributionModel!
+    description: String!
+  }
+
+  input TrackConversionInput {
+    event: String!
+    value: Float
+    metadata: JSON
+  }
+
+  type TimeRangeOutput {
+    start: String!
+    end: String!
+  }
 `;

@@ -20,6 +20,7 @@ CREATE TABLE IF NOT EXISTS flows (
   name TEXT NOT NULL,
   steps JSON NOT NULL,
   ai_config JSON,
+  active BOOLEAN DEFAULT 1,
   created_at INTEGER DEFAULT (strftime('%s', 'now')),
   updated_at INTEGER DEFAULT (strftime('%s', 'now'))
 );
@@ -101,6 +102,67 @@ CREATE TRIGGER IF NOT EXISTS update_flows_timestamp
 AFTER UPDATE ON flows
 BEGIN
   UPDATE flows SET updated_at = strftime('%s', 'now') WHERE id = NEW.id;
+END;
+
+-- Phase 3: Advanced Analytics Tables
+
+-- Funnels Table (for conversion funnel definitions)
+CREATE TABLE IF NOT EXISTS funnels (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  steps JSON NOT NULL, -- Array of funnel steps with events/components
+  flow_id TEXT REFERENCES flows(id) ON DELETE SET NULL,
+  created_at INTEGER DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+CREATE INDEX idx_funnels_user_id ON funnels(user_id);
+CREATE INDEX idx_funnels_flow_id ON funnels(flow_id);
+CREATE INDEX idx_funnels_created_at ON funnels(created_at DESC);
+
+-- Cohorts Table (for user segmentation)
+CREATE TABLE IF NOT EXISTS cohorts (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  name TEXT NOT NULL,
+  description TEXT,
+  criteria JSON NOT NULL, -- Cohort definition criteria
+  created_at INTEGER DEFAULT (strftime('%s', 'now')),
+  updated_at INTEGER DEFAULT (strftime('%s', 'now'))
+);
+
+CREATE INDEX idx_cohorts_user_id ON cohorts(user_id);
+CREATE INDEX idx_cohorts_created_at ON cohorts(created_at DESC);
+
+-- Conversions Table (for attribution analysis)
+CREATE TABLE IF NOT EXISTS conversions (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  session_id TEXT NOT NULL,
+  event TEXT NOT NULL,
+  value REAL, -- Monetary or numeric value
+  timestamp INTEGER NOT NULL,
+  metadata JSON
+);
+
+CREATE INDEX idx_conversions_user_id ON conversions(user_id);
+CREATE INDEX idx_conversions_session_id ON conversions(session_id);
+CREATE INDEX idx_conversions_event ON conversions(event);
+CREATE INDEX idx_conversions_timestamp ON conversions(timestamp DESC);
+
+-- Triggers for updated_at on new tables
+CREATE TRIGGER IF NOT EXISTS update_funnels_timestamp
+AFTER UPDATE ON funnels
+BEGIN
+  UPDATE funnels SET updated_at = strftime('%s', 'now') WHERE id = NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS update_cohorts_timestamp
+AFTER UPDATE ON cohorts
+BEGIN
+  UPDATE cohorts SET updated_at = strftime('%s', 'now') WHERE id = NEW.id;
 END;
 
 -- Insert default admin user (for development)

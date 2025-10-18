@@ -9,6 +9,9 @@ import { UserTier } from '@inference-ui/api';
 import { enforceFlowLimit, enforceEventLimit, trackEventUsage } from '../middleware/usage-tracker';
 import { AnalyticsService } from '../services/analytics-service';
 import { KVCacheAdapter } from '../adapters/kv-cache';
+import { FunnelAnalyzer } from '../services/funnel-analyzer';
+import { CohortAnalyzer } from '../services/cohort-analyzer';
+import { AttributionService } from '../services/attribution-service';
 
 export interface Context {
   env: Env;
@@ -208,6 +211,166 @@ export const resolvers = {
 
       return await analytics.getTrendAnalysis(context.userId, metric, args.timeRange, groupBy);
     },
+
+    // Phase 3: Advanced Analytics - Funnel Analysis
+    funnel: async (_parent: unknown, args: { id: string }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.getFunnel(args.id);
+    },
+
+    userFunnels: async (_parent: unknown, _args: unknown, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.getUserFunnels(context.userId);
+    },
+
+    analyzeFunnel: async (_parent: unknown, args: { funnelId: string; timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.analyzeFunnel(args.funnelId, args.timeRange);
+    },
+
+    funnelInsights: async (_parent: unknown, args: { funnelId: string; timeRange: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.getFunnelInsights(args.funnelId, args.timeRange);
+    },
+
+    // Phase 3: Advanced Analytics - Cohort Analysis
+    cohort: async (_parent: unknown, args: { id: string }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      return await cohortAnalyzer.getCohort(args.id);
+    },
+
+    userCohorts: async (_parent: unknown, _args: unknown, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      return await cohortAnalyzer.getUserCohorts(context.userId);
+    },
+
+    cohortSize: async (_parent: unknown, args: { cohortId: string; timeRange?: { start: string; end: string } }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      return await cohortAnalyzer.getCohortSize(args.cohortId, args.timeRange);
+    },
+
+    cohortRetention: async (
+      _parent: unknown,
+      args: { cohortId: string; periodType?: string; maxPeriods?: number },
+      context: Context
+    ) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      const periodType = (args.periodType?.toLowerCase() || 'week') as 'day' | 'week' | 'month';
+      const maxPeriods = args.maxPeriods || 12;
+
+      return await cohortAnalyzer.analyzeRetention(args.cohortId, periodType, maxPeriods);
+    },
+
+    compareCohorts: async (
+      _parent: unknown,
+      args: { cohortIds: string[]; periodType?: string },
+      context: Context
+    ) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      const periodType = (args.periodType?.toLowerCase() || 'week') as 'day' | 'week' | 'month';
+
+      return await cohortAnalyzer.compareCohorts(args.cohortIds, periodType);
+    },
+
+    // Phase 3: Advanced Analytics - Attribution Analysis
+    attributionAnalysis: async (
+      _parent: unknown,
+      args: { timeRange: { start: string; end: string }; model?: string; groupBy?: string },
+      context: Context
+    ) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const attributionService = new AttributionService(db, cache);
+
+      const model = (args.model?.toLowerCase().replace('_', '_') || 'last_touch') as any;
+      const groupBy = (args.groupBy?.toLowerCase() || 'source') as 'source' | 'medium' | 'campaign' | 'component';
+
+      return await attributionService.analyzeAttribution(args.timeRange, model, groupBy);
+    },
+
+    conversionSummary: async (
+      _parent: unknown,
+      args: { timeRange: { start: string; end: string } },
+      context: Context
+    ) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const attributionService = new AttributionService(db, cache);
+
+      return await attributionService.getConversionSummary(args.timeRange);
+    },
+
+    topConvertingPaths: async (
+      _parent: unknown,
+      args: { timeRange: { start: string; end: string }; limit?: number },
+      context: Context
+    ) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const attributionService = new AttributionService(db, cache);
+
+      return await attributionService.getTopConvertingPaths(args.timeRange, args.limit || 10);
+    },
+
+    attributionModels: async (_parent: unknown, _args: unknown, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const attributionService = new AttributionService(db);
+
+      return attributionService.getAttributionModels();
+    },
   },
 
   Mutation: {
@@ -350,6 +513,85 @@ export const resolvers = {
       await trackEventUsage(db, context.userId);
 
       return true;
+    },
+
+    // Phase 3: Advanced Analytics - Funnel and Cohort Mutations
+    createFunnel: async (_parent: unknown, args: { input: any }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.createFunnel(
+        context.userId,
+        args.input.name,
+        args.input.steps,
+        {
+          description: args.input.description,
+          flowId: args.input.flowId,
+        }
+      );
+    },
+
+    deleteFunnel: async (_parent: unknown, args: { id: string }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const funnelAnalyzer = new FunnelAnalyzer(db, cache);
+
+      return await funnelAnalyzer.deleteFunnel(args.id, context.userId);
+    },
+
+    createCohort: async (_parent: unknown, args: { input: any }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      // Convert GraphQL enum to lowercase for service
+      const criteria = {
+        ...args.input.criteria,
+        type: args.input.criteria.type.toLowerCase(),
+      };
+
+      return await cohortAnalyzer.createCohort(
+        context.userId,
+        args.input.name,
+        criteria,
+        args.input.description
+      );
+    },
+
+    deleteCohort: async (_parent: unknown, args: { id: string }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const cohortAnalyzer = new CohortAnalyzer(db, cache);
+
+      return await cohortAnalyzer.deleteCohort(args.id, context.userId);
+    },
+
+    trackConversion: async (_parent: unknown, args: { input: any }, context: Context) => {
+      if (!context.userId) throw new Error('Authentication required');
+
+      const db = new D1DatabaseAdapter(context.env.DB);
+      const cache = context.env.KV ? new KVCacheAdapter(context.env.KV) : undefined;
+      const attributionService = new AttributionService(db, cache);
+
+      // Get session ID from context (simplified - in production, would come from session management)
+      const sessionId = 'session-' + Date.now();
+
+      return await attributionService.trackConversion(
+        context.userId,
+        sessionId,
+        args.input.event,
+        args.input.value,
+        args.input.metadata
+      );
     },
   },
 };
