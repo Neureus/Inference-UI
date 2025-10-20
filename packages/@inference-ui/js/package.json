@@ -1,0 +1,60 @@
+{
+  "name": "@inference-ui/js",
+  "version": "1.0.0",
+  "description": "JavaScript SDK for Inference UI - browser-compatible client for web applications",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.esm.js",
+      "require": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "rollup -c",
+    "dev": "rollup -c --watch",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "javascript",
+    "sdk",
+    "client",
+    "browser",
+    "inference-ui",
+    "ai",
+    "analytics",
+    "events",
+    "frontend",
+    "vanilla-js"
+  ],
+  "author": "Inference UI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neureus/Inference-UI.git",
+    "directory": "packages/@inference-ui/js"
+  },
+  "homepage": "https://inference-ui.dev",
+  "bugs": {
+    "url": "https://github.com/Neureus/Inference-UI/issues"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.6",
+    "@types/node": "^20.11.0",
+    "rollup": "^4.9.6",
+    "tslib": "^2.6.2",
+    "typescript": "^5.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
