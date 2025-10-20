@@ -2096,7 +2096,7 @@ npm install inference-ui-core
    - Use Cases: Onboarding, checkout, surveys, multi-step forms
    - Dependencies: inference-ui-core, inference-ui-events
 
-7. **@inference-ui/node@1.0.0** 🆕 Latest
+7. **@inference-ui/node@1.0.1** 🆕 Latest
    - URL: https://www.npmjs.com/package/@inference-ui/node
    - Size: 8.1 KB (tarball), 34.9 KB (unpacked)
    - Files: 23
@@ -2164,7 +2164,7 @@ npm install inference-ui-flows          # UX flow engine
   - inference-ui-ai-engine@0.1.0 ✅
   - inference-ui-events@0.1.0 ✅
   - inference-ui-flows@0.1.0 ✅
-  - @inference-ui/node@1.0.0 ✅ (NEW)
+  - @inference-ui/node@1.0.1 ✅ (NEW)
 ✅ **Marketing Site**: Live and accessible
 ✅ **GitHub**: All tags pushed and releases created
 
@@ -2213,7 +2213,7 @@ npm install inference-ui-flows          # UX flow engine
 **Date**: October 20, 2025
 **Location**: `packages/@inference-ui/node`
 **npm**: https://www.npmjs.com/package/@inference-ui/node
-**Version**: 1.0.0
+**Version**: 1.0.1
 **Commits**: 5eebfbe
 
 Complete Node.js client SDK for backend applications to interact with Cloudflare API:
@@ -2314,7 +2314,7 @@ interface InferenceUIConfig {
 - `graphql-request@^6.1.0` - Lightweight GraphQL client
 
 **npm Publication**:
-- Package: @inference-ui/node@1.0.0
+- Package: @inference-ui/node@1.0.1
 - Published: October 20, 2025
 - Size: 8.1 KB (tarball), 34.9 KB (unpacked)
 - Files: 23
@@ -2358,4 +2358,4 @@ npm install @inference-ui/node
 ---
 
 **Generated**: October 14, 2025
-**Last Updated**: October 20, 2025 - Published @inference-ui/node@1.0.0 Node.js client SDK for backend applications. Complete GraphQL-based client with user management, API keys, flows, events, and analytics. All 7 npm packages now published and production-ready.
+**Last Updated**: October 20, 2025 - Published @inference-ui/node@1.0.1 Node.js client SDK for backend applications. Complete GraphQL-based client with user management, API keys, flows, events, and analytics. All 7 npm packages now published and production-ready.

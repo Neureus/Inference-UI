@@ -1,6 +1,6 @@
 {
   "name": "@inference-ui/node",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Node.js client SDK for Inference UI - interact with the Cloudflare-hosted API from Node.js backends",
   "main": "dist/index.js",
   "module": "dist/index.js",
