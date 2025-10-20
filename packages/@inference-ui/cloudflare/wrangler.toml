@@ -32,11 +32,15 @@ id = "813d5ccd33b943439c91f52b5b682372"
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 
-# Service Bindings - Worker-to-Worker Communication
+# Workers AI - For AI inference
+[ai]
+binding = "AI"
+
+# Service Bindings - Direct RPC to other workers (no HTTP overhead)
+# This allows the main API worker to call the inference service directly
 [[services]]
-binding = "STREAMING"
-service = "inference-ui-streaming"
-environment = "production"
+binding = "INFERENCE"
+service = "inference-service"
 
 # Environment Variables
 [vars]

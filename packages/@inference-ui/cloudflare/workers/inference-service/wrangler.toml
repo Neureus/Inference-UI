@@ -1,0 +1,39 @@
+# Inference Service Worker Configuration
+# This worker is exposed via Service Bindings (not HTTP routes)
+
+name = "inference-service"
+main = "index.ts"
+compatibility_date = "2024-10-01"
+account_id = "2bba1309281bf805590ca30d4e49adb0"
+
+# Workers AI binding
+[ai]
+binding = "AI"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "inference-ui-db"
+database_id = "47fd4ca8-72b1-44be-b310-53feb2e0a101"
+
+# R2 Storage binding
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "inference-ui-assets"
+
+# KV Cache binding
+[[kv_namespaces]]
+binding = "KV"
+id = "a9cf26e3f5104521b279b245adaa2801"
+
+# Analytics Engine binding
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Build configuration
+[build]
+command = "tsc"
+
+# NOTE: This worker is NOT exposed via routes
+# It is called directly by other workers via service bindings
+# No routes = no HTTP access, only RPC calls
