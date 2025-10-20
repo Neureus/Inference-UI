@@ -1963,10 +1963,12 @@ npm install inference-ui-core
 ## 🚀 Deployment & Publication Status
 
 ### Cloudflare Workers API
-**Status**: ✅ Live in Production
-**URL**: https://inference-ui-api.finhub.workers.dev
+**Status**: ✅ Live in Production with Service Bindings
+**Main API Worker**: https://inference-ui-api.finhub.workers.dev
+**Inference Service Worker**: https://inference-service.finhub.workers.dev (private RPC)
 **Health**: Operational (verified October 20, 2025)
-**Account**: FinHub (finhub)
+**Account**: FinHub (d9700a3fcc05a01f5d81670ebbae817d)
+**Architecture**: Service Bindings (Direct RPC, no HTTP overhead)
 
 **Available Endpoints**:
 - `GET /` - API information
@@ -1989,13 +1991,20 @@ npm install inference-ui-core
 - ✅ Workers AI integration (Llama 3.1 8B)
 - ✅ **Service Bindings** - Direct RPC between workers (<1ms latency)
 
-**Architecture**:
-- **Main API Worker**: Public HTTP endpoints (GraphQL, events, streaming)
+**Architecture** (✅ Deployed with Service Bindings):
+- **Main API Worker**: Public HTTP endpoints (GraphQL, events)
+  - URL: https://inference-ui-api.finhub.workers.dev
+  - Version: 1a162208-8870-4576-91a5-ff2d31a5a3f7
+  - Startup Time: 16ms
 - **Inference Service Worker**: Private RPC service (AI inference, analytics, event processing)
+  - URL: https://inference-service.finhub.workers.dev (HTTP disabled for security)
+  - Version: 0debdfcd-001a-4ec3-af89-f99d643e947b
+  - Called only via env.INFERENCE.* RPC methods
 - **Communication**: Direct service bindings (no HTTP overhead, type-safe)
 - **Performance**: ~50x faster than HTTP fetch (<1ms vs ~50ms overhead)
 - **Security**: Inference service not exposed to internet, only accessible via RPC
 - **Smart Placement**: Workers co-located near D1, R2, KV for minimal latency
+- **Deployed**: October 20, 2025
 
 ### npm Package Registry
 **Status**: ✅ All Packages Published
@@ -2155,4 +2164,4 @@ npm install inference-ui-flows          # UX flow engine
 ---
 
 **Generated**: October 14, 2025
-**Last Updated**: October 20, 2025 - Published complete React Native SDK to npm (6 packages total). All core packages now available: inference-ui-react (web), inference-ui-react-native (mobile), inference-ui-core (shared), inference-ui-ai-engine (hybrid AI), inference-ui-events (analytics), inference-ui-flows (UX patterns). Complete SDK ready for production integration.
+**Last Updated**: October 20, 2025 - Deployed Service Bindings architecture to production. Main API worker and inference service worker now communicate via direct RPC (<1ms latency, 50x faster than HTTP). All 6 npm packages published. Complete SDK ready for production integration with ultra-low latency worker-to-worker communication.

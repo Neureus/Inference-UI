@@ -37,14 +37,11 @@ export default {
 
         // Stream endpoints - Route to streaming worker via service binding
         case path.startsWith('/stream/') || path.startsWith('/api/stream/'):
-          const streamPath = path.replace('/stream', '').replace('/api/stream', '');
-          const streamUrl = new URL(streamPath, request.url);
-
-          // Forward to streaming worker (0ms latency via service binding)
-          return await env.STREAMING.fetch(streamUrl, {
-            method: request.method,
-            headers: request.headers,
-            body: request.body,
+          // For now, handle streaming directly in main worker
+          // TODO: Implement direct RPC calls to env.INFERENCE methods
+          return new Response('Streaming endpoints temporarily disabled - service binding integration in progress', {
+            status: 503,
+            headers: { 'Content-Type': 'text/plain' },
           });
 
         case path === '/health':

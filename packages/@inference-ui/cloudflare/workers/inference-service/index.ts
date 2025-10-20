@@ -116,7 +116,7 @@ export interface UsageMetrics {
 }
 
 // Service Worker Implementation
-export default class InferenceServiceWorker implements InferenceService {
+class InferenceServiceWorker implements InferenceService {
   private env: Env;
 
   constructor(env: Env) {
@@ -128,7 +128,7 @@ export default class InferenceServiceWorker implements InferenceService {
    */
   async streamChat(request: ChatRequest): Promise<Response> {
     try {
-      const stream = await this.env.AI.run('@cf/meta/llama-3.1-8b-instruct', {
+      const stream = await this.env.AI.run('@cf/meta/llama-3.1-8b-instruct' as any, {
         messages: request.messages,
         stream: true,
         temperature: request.temperature ?? 0.7,
@@ -390,7 +390,7 @@ export default class InferenceServiceWorker implements InferenceService {
   }
 
   // Helper methods
-  private classifyIntent(event: string, component?: string): string {
+  private classifyIntent(event: string, _component?: string): string {
     const eventLower = event.toLowerCase();
     if (eventLower.includes('click') || eventLower.includes('tap')) {
       if (eventLower.includes('buy') || eventLower.includes('purchase') || eventLower.includes('checkout')) {
@@ -431,13 +431,40 @@ export default class InferenceServiceWorker implements InferenceService {
   }
 }
 
-// Cloudflare Workers RPC Export
+// Cloudflare Workers Service Binding Export
+// Export methods directly for RPC calls
+const service = (env: Env) => new InferenceServiceWorker(env);
+
 export default {
-  async fetch(request: Request, env: Env): Promise<Response> {
-    // Service binding workers can still have HTTP endpoints for debugging
+  async streamChat(request: ChatRequest, env: Env): Promise<Response> {
+    return service(env).streamChat(request);
+  },
+
+  async streamCompletion(request: CompletionRequest, env: Env): Promise<Response> {
+    return service(env).streamCompletion(request);
+  },
+
+  async streamObject(request: ObjectRequest, env: Env): Promise<Response> {
+    return service(env).streamObject(request);
+  },
+
+  async processEvents(request: EventBatchRequest, env: Env): Promise<EventBatchResponse> {
+    return service(env).processEvents(request);
+  },
+
+  async getAnalytics(request: AnalyticsRequest, env: Env): Promise<AnalyticsResponse> {
+    return service(env).getAnalytics(request);
+  },
+
+  async getUsageMetrics(userId: string, env: Env): Promise<UsageMetrics> {
+    return service(env).getUsageMetrics(userId);
+  },
+
+  // Optional fetch handler for debugging
+  async fetch(_request: Request, _env: Env): Promise<Response> {
     return new Response('Inference Service Worker - Use service bindings for RPC calls', {
       status: 200,
       headers: { 'Content-Type': 'text/plain' },
     });
   },
-} satisfies ExportedHandler<Env>;
+};

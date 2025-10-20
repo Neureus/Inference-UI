@@ -2,12 +2,12 @@
  * Cloudflare types
  */
 
-// Import service binding types
-import type { InferenceService } from '../workers/inference-service';
+// Import service binding types from separate file to avoid path issues
+import type { InferenceService } from './service-types';
 
 export interface Env {
   // Service Bindings - Direct RPC calls (no HTTP)
-  INFERENCE: Service<InferenceService>; // Direct RPC to inference service worker
+  INFERENCE: InferenceService; // Direct RPC to inference service worker
 
   // Cloudflare Bindings
   DB: D1Database;
@@ -20,13 +20,6 @@ export interface Env {
   API_VERSION?: string;
   ENVIRONMENT?: string;
 }
-
-// Service binding wrapper type
-export type Service<T> = {
-  [K in keyof T]: T[K] extends (...args: infer Args) => infer Return
-    ? (...args: Args) => Return
-    : T[K];
-};
 
 export interface WorkerRequest {
   method: string;
