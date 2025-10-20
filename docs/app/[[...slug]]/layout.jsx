@@ -1,7 +1,7 @@
-export { Layout as default } from 'nextra/layouts';
+export { Layout as default } from 'nextra-theme-docs/layout';
 
 export const metadata = {
   title: {
-    template: '%s – Velvet',
+    template: '%s – Inference UI',
   },
 };

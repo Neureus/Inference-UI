@@ -1,4 +1,4 @@
-import { getPage, getPages } from 'nextra/page';
+import { getPage, getPages } from 'nextra-theme-docs/page';
 import { notFound } from 'next/navigation';
 
 export async function generateStaticParams() {

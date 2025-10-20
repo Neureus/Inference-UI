@@ -2072,11 +2072,22 @@ npm install inference-ui-flows          # UX flow engine
 - Pages: Home, Features, Pricing, Contact
 - Deployment: Cloudflare Pages (automatic from Git)
 
-**Documentation Site**:
-- Location: `docs/` directory
-- Framework: Nextra 4 with Next.js 15 App Router
-- Status: Ready for deployment (not yet deployed)
-- Content: Getting started, installation, architecture, deployment guides
+**Documentation**:
+- **Location**: README files in each npm package
+- **Comprehensive Guides**: Each package includes detailed README with:
+  - Installation instructions
+  - API reference
+  - Usage examples
+  - Code samples
+- **Available on npm**: Documentation visible on npm package pages
+  - inference-ui-react: https://www.npmjs.com/package/inference-ui-react
+  - inference-ui-react-native: https://www.npmjs.com/package/inference-ui-react-native
+  - inference-ui-ai-engine: https://www.npmjs.com/package/inference-ui-ai-engine
+  - inference-ui-events: https://www.npmjs.com/package/inference-ui-events
+  - inference-ui-flows: https://www.npmjs.com/package/inference-ui-flows
+  - inference-ui-core: https://www.npmjs.com/package/inference-ui-core
+- **Examples**: Complete integration examples in `examples/` directory
+- **Dedicated Docs Site**: Planned for future release (Nextra 4 setup in progress)
 
 ### GitHub Releases
 **Latest Tags**:
@@ -2123,11 +2134,14 @@ npm install inference-ui-flows          # UX flow engine
 - ✅ Publish @inference-ui/ai-engine package (COMPLETED Oct 20, 2025)
 - ✅ Publish @inference-ui/events package (COMPLETED Oct 20, 2025)
 - ✅ Publish @inference-ui/flows package (COMPLETED Oct 20, 2025)
-- 🔄 Deploy documentation site to Cloudflare Pages
+- ✅ Documentation (README files in all packages, visible on npm)
+- 🔄 Complete Nextra 4 docs site setup and deployment
 - 🔄 Announce on social media and developer communities
 - 🔄 Beta program setup for early adopters
 - 🔄 Create comprehensive integration guide
 - 🔄 Record demo videos for YouTube
+- 🔄 Write blog post announcement
+- 🔄 Submit to Awesome lists and directories
 
 ---
 
