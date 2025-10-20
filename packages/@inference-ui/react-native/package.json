@@ -1,5 +1,5 @@
 {
-  "name": "inference-ui-react-native",
+  "name": "@inference-ui/react-native",
   "version": "0.1.0",
   "description": "Liquid Glass design system for React Native",
   "main": "dist/index.js",

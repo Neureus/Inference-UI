@@ -1,5 +1,5 @@
 {
-  "name": "inference-ui-ai-engine",
+  "name": "@inference-ui/ai-engine",
   "version": "0.1.0",
   "description": "Hybrid AI engine with intelligent routing between local TFLite and Cloudflare Workers AI for React Native",
   "main": "dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "inference-ui-events",
+  "name": "@inference-ui/events",
   "version": "0.1.0",
   "description": "Zero-configuration event tracking and analytics for React Native with automatic capture, local queuing, and Cloudflare Workers integration",
   "main": "dist/index.js",

@@ -1,5 +1,5 @@
 {
-  "name": "inference-ui-flows",
+  "name": "@inference-ui/flows",
   "version": "0.1.0",
   "description": "Intelligent UX flow engine for React Native with multi-step wizards, conditional navigation, progress tracking, and analytics integration",
   "main": "dist/index.js",
