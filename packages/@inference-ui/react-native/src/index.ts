@@ -1,11 +1,13 @@
 /**
- * Velvet Glass Design System
- *
- * A glassmorphism-based design system built with Expo
- * Featuring blur effects, transparency, and liquid glass aesthetics
+ * @inference-ui/react-native
+ * All-in-one React Native package with glassmorphism design system,
+ * AI components, events, flows, and hybrid AI engine
  */
 
-// Theme
+// Core utilities and types
+export * from './core';
+
+// Glass Theme System
 export { theme, colors, spacing, typography, glassEffects } from './theme';
 export type {
   Theme,
@@ -21,7 +23,7 @@ export type {
   TintType,
 } from './theme';
 
-// Primitives
+// Glass Primitives
 export {
   GlassView,
   GlassCard,
@@ -36,10 +38,19 @@ export type {
   GlassButtonProps,
 } from './primitives';
 
-// Utils
+// Glass Utils
 export { GradientBackground } from './utils';
 export type { GradientBackgroundProps } from './utils';
 
 // AI-Powered Components
 export { AIInput, AIButton } from './components';
 export type { AIInputProps, AIButtonProps } from './components';
+
+// Events tracking
+export * from './events';
+
+// Flow engine
+export * from './flows';
+
+// AI engine (hybrid local TFLite + Cloudflare Workers AI)
+export * from './ai-engine';

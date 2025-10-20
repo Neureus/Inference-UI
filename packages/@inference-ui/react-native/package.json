@@ -1,9 +1,35 @@
 {
   "name": "@inference-ui/react-native",
-  "version": "0.1.0",
-  "description": "Liquid Glass design system for React Native",
+  "version": "1.0.0",
+  "description": "All-in-one React Native package with glassmorphism design system, AI components, events, flows, and hybrid AI engine",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./primitives": {
+      "types": "./dist/primitives/index.d.ts",
+      "import": "./dist/primitives/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
+    },
+    "./flows": {
+      "types": "./dist/flows/index.d.ts",
+      "import": "./dist/flows/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
@@ -22,12 +48,16 @@
     "design-system",
     "ui",
     "components",
-    "inference-ui"
+    "inference-ui",
+    "ai",
+    "events",
+    "analytics",
+    "flows",
+    "tree-shaking"
   ],
   "author": "Inference UI Team",
   "license": "MIT",
   "dependencies": {
-    "inference-ui-core": "^0.1.0",
     "expo": "~54.0.13",
     "expo-blur": "~15.0.7",
     "expo-glass-effect": "~0.1.4",

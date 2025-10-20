@@ -3,9 +3,18 @@
 [![npm version](https://badge.fury.io/js/%40inference-ui%2Freact.svg)](https://www.npmjs.com/package/@inference-ui/react)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-React hooks for AI streaming, chat, completions, and generative UI. Built on Cloudflare Workers AI for ultra-low latency edge inference.
+**All-in-one React package** for AI streaming, chat, completions, generative UI, events, flows, and hybrid AI engine. Built on Cloudflare Workers AI for ultra-low latency edge inference.
 
-**⚠️ Package Renamed**: This package was previously published as `inference-ui-react`. Please update your dependencies to `@inference-ui/react`.
+## 🎉 v1.0.0 - Consolidated Package
+
+This package now includes everything you need:
+- ✅ **AI Hooks** (useChat, useCompletion, useObject)
+- ✅ **AI Components** (ChatInterface, AIInput, AIForm, SearchBox)
+- ✅ **Event Tracking** (automatic analytics, zero-config)
+- ✅ **Flow Engine** (multi-step wizards, conditional navigation)
+- ✅ **AI Engine** (hybrid local/edge AI)
+
+**Previously separate packages** (`@inference-ui/events`, `@inference-ui/flows`, `@inference-ui/ai-engine`, `@inference-ui/core`) are now consolidated with full tree-shaking support.
 
 ## Features
 

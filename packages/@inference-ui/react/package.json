@@ -1,14 +1,40 @@
 {
   "name": "@inference-ui/react",
-  "version": "0.4.1",
-  "description": "React hooks for AI streaming, chat, completions, and generative UI",
+  "version": "1.0.0",
+  "description": "All-in-one React package for AI streaming, events, flows, and generative UI with tree-shaking support",
   "main": "dist/index.js",
+  "module": "dist/index.js",
   "types": "dist/index.d.ts",
+  "sideEffects": false,
   "files": [
     "dist",
     "README.md",
     "package.json"
   ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./hooks": {
+      "types": "./dist/hooks/index.d.ts",
+      "import": "./dist/hooks/index.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./events": {
+      "types": "./dist/events/index.d.ts",
+      "import": "./dist/events/index.js"
+    },
+    "./flows": {
+      "types": "./dist/flows/index.d.ts",
+      "import": "./dist/flows/index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
     "build": "tsc",
     "test": "jest --passWithNoTests",
@@ -30,7 +56,11 @@
     "anthropic",
     "cloudflare",
     "workers-ai",
-    "vercel-ai"
+    "vercel-ai",
+    "events",
+    "analytics",
+    "flows",
+    "tree-shaking"
   ],
   "author": "Inference UI Team",
   "license": "MIT",

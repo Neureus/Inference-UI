@@ -1,7 +1,10 @@
 /**
  * @inference-ui/react
- * React hooks for AI streaming, chat, completions, and generative UI
+ * All-in-one React package for AI streaming, events, flows, and generative UI
  */
+
+// Core utilities and types
+export * from './core';
 
 // Provider and configuration
 export * from './provider';
@@ -20,3 +23,12 @@ export * from './generative-ui';
 
 // AI-Powered Components
 export * from './components';
+
+// Events tracking
+export * from './events';
+
+// Flow engine
+export * from './flows';
+
+// AI engine (hybrid local/edge)
+export * from './ai-engine';
