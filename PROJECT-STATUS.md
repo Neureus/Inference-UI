@@ -2096,7 +2096,7 @@ npm install inference-ui-core
    - Use Cases: Onboarding, checkout, surveys, multi-step forms
    - Dependencies: inference-ui-core, inference-ui-events
 
-7. **@inference-ui/node@1.0.1** 🆕 Latest
+7. **@inference-ui/node@1.0.1** 🆕
    - URL: https://www.npmjs.com/package/@inference-ui/node
    - Size: 8.1 KB (tarball), 34.9 KB (unpacked)
    - Files: 23
@@ -2104,6 +2104,16 @@ npm install inference-ui-core
    - Capabilities: GraphQL client, user management, API keys, flows, event tracking, analytics
    - Use Cases: Next.js API routes, Express servers, cron jobs, backend analytics, admin tools
    - Dependencies: graphql@^16.9.0, graphql-request@^6.1.0
+
+8. **@inference-ui/js@1.0.0** 🆕 Latest
+   - URL: https://www.npmjs.com/package/@inference-ui/js
+   - Size: 9.9 KB (tarball), 50.3 KB (unpacked)
+   - Files: 17
+   - Features: JavaScript browser SDK for framework-agnostic web applications
+   - Capabilities: Fetch-based client, user management, API keys, flows, event tracking, analytics
+   - Use Cases: Vanilla JS, Vue, Angular, Svelte, static sites, Chrome extensions
+   - Dependencies: Zero runtime dependencies
+   - Formats: ESM + CommonJS, CDN-ready
 
 **Installation**:
 ```bash
@@ -2115,6 +2125,9 @@ npm install inference-ui-react-native inference-ui-ai-engine inference-ui-events
 
 # Node.js backend apps - Client SDK
 npm install @inference-ui/node
+
+# Browser apps (vanilla JS, Vue, Angular, Svelte, etc.)
+npm install @inference-ui/js
 
 # Individual packages (also available)
 npm install inference-ui-core           # Core utilities (auto-installed)
@@ -2157,14 +2170,15 @@ npm install inference-ui-flows          # UX flow engine
 
 ### Deployment Verification
 ✅ **API Health Check**: `{"status":"healthy","timestamp":1760966873594}`
-✅ **npm Registry**: All 7 packages available and installable
+✅ **npm Registry**: All 8 packages published
   - inference-ui-react@0.3.0 ✅
   - inference-ui-react-native@0.1.0 ✅
   - inference-ui-core@0.1.0 ✅
   - inference-ui-ai-engine@0.1.0 ✅
   - inference-ui-events@0.1.0 ✅
   - inference-ui-flows@0.1.0 ✅
-  - @inference-ui/node@1.0.1 ✅ (NEW)
+  - @inference-ui/node@1.0.1 ✅
+  - @inference-ui/js@1.0.0 ✅ (NEW)
 ✅ **Marketing Site**: Live and accessible
 ✅ **GitHub**: All tags pushed and releases created
 
@@ -2181,11 +2195,12 @@ npm install inference-ui-flows          # UX flow engine
 - ✅ Comprehensive documentation and examples
 
 **Complete SDK Available**:
-- **Web**: inference-ui-react (streaming hooks + AI components)
+- **React Web**: inference-ui-react (streaming hooks + AI components)
+- **Vanilla JS/Browser**: @inference-ui/js (Vue, Angular, Svelte, vanilla JS)
 - **Mobile**: inference-ui-react-native + inference-ui-ai-engine + inference-ui-events + inference-ui-flows
 - **Node.js**: @inference-ui/node (client SDK for backend applications)
 - **Backend**: Cloudflare Workers API with GraphQL, streaming, analytics
-- **Total Packages**: 7 packages published and ready for production
+- **Total Packages**: 8 packages published and ready for production
 
 **Current Integrations**:
 - 🔄 tap2 Payment Ninja app - Migration in progress (PR #7)
@@ -2355,7 +2370,176 @@ npm install @inference-ui/node
 **Commits**:
 - 5eebfbe - feat: Add Node.js SDK for Cloudflare API integration
 
+### 19. ✅ @inference-ui/js Package (JavaScript Browser SDK)
+
+**Status**: Complete
+**Date**: October 20, 2025
+**Location**: `packages/@inference-ui/js`
+**npm**: https://www.npmjs.com/package/@inference-ui/js
+**Version**: 1.0.0
+**Commits**: 2a31090
+
+Browser-compatible JavaScript SDK for vanilla JS and framework-agnostic web applications:
+
+**Features**:
+- **Browser-Compatible** - Works in all modern browsers with fetch API
+- **Framework-Agnostic** - Use with vanilla JS, Vue, Angular, Svelte, or any framework
+- **Lightweight** - ~5KB gzipped, zero runtime dependencies
+- **ESM & CommonJS** - Supports both module formats
+- **TypeScript Support** - Full type definitions included
+- **CDN-Ready** - Can be loaded directly from CDN
+- **User Management** - Get user info, check tier limits
+- **API Key Management** - Create, list, and revoke API keys
+- **Event Tracking** - Track events and batch operations
+- **Analytics** - Query usage metrics and analytics data
+- **Flow Management** - Create and manage UX flows
+
+**Client Implementation**:
+```javascript
+import { InferenceClient } from '@inference-ui/js';
+
+const client = new InferenceClient({
+  apiKey: 'sk_live_xxx', // or sk_test_xxx
+});
+
+// Get current user
+const user = await client.getCurrentUser();
+
+// Track events
+await client.trackEvent({
+  event: 'button_click',
+  timestamp: Date.now(),
+  data: { button: 'signup' },
+});
+
+// Query analytics
+const analytics = await client.queryAnalytics({
+  startDate: Date.now() - 7 * 24 * 60 * 60 * 1000,
+  endDate: Date.now(),
+});
+```
+
+**CDN Usage**:
+```html
+<script type="module">
+  import { InferenceClient } from 'https://cdn.jsdelivr.net/npm/@inference-ui/js@latest/dist/index.esm.js';
+
+  const client = new InferenceClient({ apiKey: 'sk_live_xxx' });
+  await client.trackEvent({ event: 'page_view', timestamp: Date.now() });
+</script>
+```
+
+**Main Client Methods**:
+- `getCurrentUser()` - Retrieve authenticated user info
+- `createApiKey(input)` - Generate new API key with optional expiration
+- `listApiKeys()` - List all API keys for user
+- `revokeApiKey(keyPrefix)` - Revoke specific API key
+- `getFlows()` - Get all flows for user
+- `getFlow(id)` - Get specific flow by ID
+- `createFlow(name, steps)` - Create new UX flow
+- `deleteFlow(id)` - Delete flow by ID
+- `trackEvent(event)` - Track single event
+- `trackEvents(events)` - Track batch of events
+- `queryAnalytics(query)` - Query analytics with time range and metrics
+- `getUsageMetrics()` - Get current usage and tier limits
+
+**Use Cases**:
+- **Vanilla JavaScript** - Direct browser usage without frameworks
+- **Vue.js** - Reactive analytics and event tracking
+- **Angular** - Dependency injection integration
+- **Svelte** - Reactive stores integration
+- **Static Sites** - Add analytics to static HTML sites
+- **Chrome Extensions** - Track extension usage
+- **Web Workers** - Background analytics processing
+
+**Documentation**:
+- **README.md** (390+ lines) - Comprehensive guide with:
+  - Installation (npm, CDN)
+  - Quick start examples
+  - Full API reference for all methods
+  - Framework-specific examples (Vue, Angular, Svelte)
+  - TypeScript usage guide
+  - Error handling patterns
+  - Browser compatibility notes
+
+**Implementation Files**:
+- `src/client.ts` (300+ lines) - Main client with fetch-based API calls
+- `src/types.ts` (140+ lines) - Complete TypeScript type definitions
+- `src/index.ts` (27 lines) - Main exports
+- `rollup.config.js` - Build configuration for ESM + CommonJS
+- `package.json` - Package configuration
+- `tsconfig.json` - TypeScript config
+- `README.md` - Comprehensive documentation
+
+**Build System**:
+- **Rollup** - Modern bundler with tree-shaking
+- **TypeScript** - Full type safety with declaration files
+- **Dual Builds** - ESM (`dist/index.esm.js`) and CommonJS (`dist/index.js`)
+- **Source Maps** - Included for debugging
+- **Zero Dependencies** - No runtime dependencies
+
+**npm Publication**:
+- Package: @inference-ui/js@1.0.0
+- Published: October 20, 2025
+- Size: 9.9 KB (tarball), 50.3 KB (unpacked)
+- Files: 17
+- Registry: https://registry.npmjs.org/@inference-ui/js
+
+**Installation**:
+```bash
+# npm
+npm install @inference-ui/js
+
+# yarn
+yarn add @inference-ui/js
+
+# pnpm
+pnpm add @inference-ui/js
+```
+
+**Type Safety**:
+- Full TypeScript support with exported types
+- InferenceConfig, User, ApiKey, Flow, Event, AnalyticsQuery, UsageMetrics
+- Import types via `import type { ... } from '@inference-ui/js'`
+
+**Browser Compatibility**:
+- Works in all modern browsers (Chrome, Firefox, Safari, Edge)
+- Requires fetch API and Promises (ES2020)
+- For older browsers, include polyfills
+
+**Benefits**:
+- **Framework-Agnostic** - Works with any JavaScript framework or no framework
+- **Type-Safe** - Full TypeScript support prevents runtime errors
+- **Lightweight** - Minimal bundle size impact (~5KB)
+- **Zero Dependencies** - No external runtime dependencies
+- **CDN-Ready** - Direct browser usage without build tools
+- **Production-Ready** - Complete error handling and authentication
+
+**Framework Examples**:
+- ✅ Vanilla JavaScript with CDN
+- ✅ Vue.js with reactive data
+- ✅ Angular with dependency injection
+- ✅ Svelte with reactive stores
+- ✅ Static HTML sites
+
+**Testing**:
+- ✅ TypeScript compilation successful
+- ✅ Package builds without errors (ESM + CommonJS)
+- ✅ npm publication successful
+- ✅ All methods implemented and typed
+- ✅ Source maps generated
+
+**Integration Ready**:
+- Compatible with all modern browsers
+- Compatible with Vue 2/3, Angular, Svelte, etc.
+- Works with bundlers (Webpack, Vite, Rollup, etc.)
+- Works without bundlers (direct CDN import)
+- Ready for Chrome extensions and web workers
+
+**Commits**:
+- 2a31090 - feat: Add JavaScript SDK for browser applications
+
 ---
 
 **Generated**: October 14, 2025
-**Last Updated**: October 20, 2025 - Published @inference-ui/node@1.0.1 Node.js client SDK for backend applications. Complete GraphQL-based client with user management, API keys, flows, events, and analytics. All 7 npm packages now published and production-ready.
+**Last Updated**: October 20, 2025 - Published @inference-ui/js@1.0.0 JavaScript browser SDK for framework-agnostic web applications. Complete fetch-based client with ESM/CommonJS builds. All 8 npm packages now published and production-ready.
