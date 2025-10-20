@@ -1,0 +1,63 @@
+{
+  "name": "@inference-ui/node",
+  "version": "1.0.0",
+  "description": "Node.js client SDK for Inference UI - interact with the Cloudflare-hosted API from Node.js backends",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.js"
+    },
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "import": "./dist/client/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint src --ext .ts",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "nodejs",
+    "sdk",
+    "client",
+    "graphql",
+    "inference-ui",
+    "ai",
+    "analytics",
+    "events",
+    "backend",
+    "api-client"
+  ],
+  "author": "Inference UI Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neureus/Inference-UI.git",
+    "directory": "packages/@inference-ui/node"
+  },
+  "homepage": "https://inference-ui.dev",
+  "bugs": {
+    "url": "https://github.com/Neureus/Inference-UI/issues"
+  },
+  "dependencies": {
+    "graphql": "^16.9.0",
+    "graphql-request": "^6.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "typescript": "^5.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
