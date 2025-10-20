@@ -1,5 +1,5 @@
 {
-  "name": "@inference-ui/core",
+  "name": "inference-ui-core",
   "version": "0.1.0",
   "description": "Core utilities and types for Liquid UI",
   "main": "dist/index.js",

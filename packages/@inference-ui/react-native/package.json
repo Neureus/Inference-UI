@@ -1,5 +1,5 @@
 {
-  "name": "@inference-ui/react-native",
+  "name": "inference-ui-react-native",
   "version": "0.1.0",
   "description": "Liquid Glass design system for React Native",
   "main": "dist/index.js",
@@ -21,12 +21,13 @@
     "glassmorphism",
     "design-system",
     "ui",
-    "components"
+    "components",
+    "inference-ui"
   ],
-  "author": "Liquid UI Team",
+  "author": "Inference UI Team",
   "license": "MIT",
   "dependencies": {
-    "@inference-ui/core": "^0.1.0",
+    "inference-ui-core": "^0.1.0",
     "expo": "~54.0.13",
     "expo-blur": "~15.0.7",
     "expo-glass-effect": "~0.1.4",

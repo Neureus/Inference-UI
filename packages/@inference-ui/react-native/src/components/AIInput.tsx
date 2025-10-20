@@ -139,7 +139,8 @@ export function AIInput({
               ...validationRules,
             });
 
-            const fieldValidation = result?.output?.[name];
+            const output = result?.output as Record<string, any> | undefined;
+            const fieldValidation = output?.[name];
             if (fieldValidation) {
               setIsValid(fieldValidation.valid);
               setValidationMessage(fieldValidation.message || '');
