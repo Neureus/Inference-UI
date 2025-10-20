@@ -2006,7 +2006,8 @@ npm install inference-ui-core
 - **Smart Placement**: Workers co-located near D1, R2, KV for minimal latency
 - **Deployed**: October 20, 2025
 
-**Authentication & Multi-Tenancy**:
+**Authentication & Multi-Tenancy** (✅ Deployed):
+- **Status**: Live in production (October 20, 2025)
 - **API Key Based**: sk_live_xxx format (production), sk_test_xxx (development)
 - **Tenant Identification**: Every request authenticated with API key → user ID + tier
 - **Multiple Header Formats**: Authorization Bearer, X-API-Key, x-inference-key
@@ -2027,7 +2028,13 @@ npm install inference-ui-core
 5. Service enforces tier limits and tracks usage per tenant
 6. All data operations scoped to authenticated user
 
-**Documentation**: See `AUTHENTICATION.md` for complete guide
+**Implementation**:
+- GraphQL API requires authentication (401 if no valid key)
+- Events endpoint accepts both authenticated and unauthenticated requests
+- Authenticated events automatically enriched with user context
+- Health and root endpoints remain public
+
+**Documentation**: See `packages/@inference-ui/cloudflare/AUTHENTICATION.md` for complete guide
 
 ### npm Package Registry
 **Status**: ✅ All Packages Published

@@ -4,6 +4,8 @@
 
 Inference UI uses **API key-based authentication** to identify tenants (users/customers) for all SDK requests. This ensures proper usage tracking, tier limit enforcement, and data isolation in our multi-tenant SaaS platform.
 
+**Status**: ✅ Deployed to production (https://inference-ui-api.finhub.workers.dev)
+
 ## How Tenant Identification Works
 
 ```

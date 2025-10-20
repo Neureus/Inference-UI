@@ -7,6 +7,7 @@
 import { createResponse, createErrorResponse } from './workers';
 import { handleGraphQL } from './graphql';
 import { handleEventIngestion } from './events';
+import { requireAuth, authenticate } from './auth/middleware';
 import type { Env } from './types';
 
 export default {
@@ -18,7 +19,7 @@ export default {
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-API-Key, x-inference-key',
     };
 
     // Handle OPTIONS preflight
@@ -29,11 +30,21 @@ export default {
     try {
       // Route requests
       switch (true) {
-        case path === '/graphql' || path === '/api/graphql':
-          return await handleGraphQL(request, env, ctx);
+        case path === '/graphql' || path === '/api/graphql': {
+          // Require authentication for GraphQL API
+          const authResult = await requireAuth(request, env);
+          if (authResult instanceof Response) {
+            return authResult; // 401 Unauthorized
+          }
+          return await handleGraphQL(request, env, ctx, authResult);
+        }
 
-        case path === '/events' || path === '/api/events':
-          return await handleEventIngestion(request, env, ctx);
+        case path === '/events' || path === '/api/events': {
+          // Allow both authenticated and unauthenticated events
+          // Authenticated events get user context for analytics
+          const authContext = await authenticate(request, env);
+          return await handleEventIngestion(request, env, ctx, authContext);
+        }
 
         // Stream endpoints - Route to streaming worker via service binding
         case path.startsWith('/stream/') || path.startsWith('/api/stream/'):

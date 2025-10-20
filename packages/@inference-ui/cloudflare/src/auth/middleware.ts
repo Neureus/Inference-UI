@@ -79,6 +79,7 @@ async function validateApiKey(apiKey: string, env: Env): Promise<AuthContext | n
   }
 
   // Query D1 for API key (slow path)
+  const keyHash = await hashApiKey(apiKey);
   const result = await env.DB.prepare(`
     SELECT
       ak.user_id,
@@ -89,7 +90,7 @@ async function validateApiKey(apiKey: string, env: Env): Promise<AuthContext | n
     FROM api_keys ak
     JOIN users u ON u.id = ak.user_id
     WHERE ak.key_hash = ? AND ak.revoked_at IS NULL
-  `).bind(hashApiKey(apiKey)).first<{
+  `).bind(keyHash).first<{
     user_id: string;
     key_prefix: string;
     last_used_at: number | null;
@@ -114,11 +115,13 @@ async function validateApiKey(apiKey: string, env: Env): Promise<AuthContext | n
   };
 
   // Update last_used_at (non-blocking)
-  env.DB.prepare(`
-    UPDATE api_keys
-    SET last_used_at = ?
-    WHERE key_hash = ?
-  `).bind(Date.now(), hashApiKey(apiKey)).run().catch(console.error);
+  hashApiKey(apiKey).then(hash => {
+    env.DB.prepare(`
+      UPDATE api_keys
+      SET last_used_at = ?
+      WHERE key_hash = ?
+    `).bind(Date.now(), hash).run().catch(console.error);
+  });
 
   // Cache in KV for 5 minutes
   if (env.KV) {
@@ -132,15 +135,13 @@ async function validateApiKey(apiKey: string, env: Env): Promise<AuthContext | n
  * Hash API key for storage (SHA-256)
  * Never store raw API keys in the database
  */
-function hashApiKey(apiKey: string): string {
+async function hashApiKey(apiKey: string): Promise<string> {
   // Use Web Crypto API for hashing
   const encoder = new TextEncoder();
   const data = encoder.encode(apiKey);
 
-  // Note: This is synchronous in Workers runtime
-  return btoa(String.fromCharCode(...new Uint8Array(
-    crypto.subtle.digestSync('SHA-256', data)
-  )));
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  return btoa(String.fromCharCode(...new Uint8Array(hashBuffer)));
 }
 
 /**
@@ -254,7 +255,7 @@ export async function createApiKey(
   expiresInDays?: number
 ): Promise<{ apiKey: string; keyPrefix: string }> {
   const apiKey = generateApiKey('production');
-  const keyHash = hashApiKey(apiKey);
+  const keyHash = await hashApiKey(apiKey);
   const keyPrefix = getKeyPrefix(apiKey);
   const expiresAt = expiresInDays ? Date.now() + (expiresInDays * 24 * 60 * 60 * 1000) : null;
 
@@ -270,7 +271,7 @@ export async function createApiKey(
  * Revoke API key
  */
 export async function revokeApiKey(apiKey: string, env: Env): Promise<boolean> {
-  const keyHash = hashApiKey(apiKey);
+  const keyHash = await hashApiKey(apiKey);
 
   const result = await env.DB.prepare(`
     UPDATE api_keys

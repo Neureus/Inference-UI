@@ -4,6 +4,7 @@
  */
 
 import type { Env } from '../types';
+import type { RequestContext } from '../auth/middleware';
 import { createResponse, createErrorResponse } from '../workers';
 import { EventProcessor, type IncomingEvent } from '@inference-ui/api';
 import {
@@ -16,7 +17,8 @@ import { enforceEventLimit, trackEventUsage, parseUsageLimitError } from '../mid
 export async function handleEventIngestion(
   request: Request,
   env: Env,
-  _ctx: ExecutionContext
+  _ctx: ExecutionContext,
+  authContext: RequestContext
 ): Promise<Response> {
   if (request.method !== 'POST') {
     return createErrorResponse('Method not allowed. Use POST.', 405);
@@ -29,10 +31,20 @@ export async function handleEventIngestion(
     // Create database adapter
     const database = new D1DatabaseAdapter(env.DB);
 
-    // Check tier limits for authenticated users before processing
-    // Extract userId from first event (assuming batch is from same user)
-    const userId = events[0]?.userId;
+    // Use authenticated user ID if available, otherwise check event payload
+    const userId = authContext.isAuthenticated
+      ? authContext.userId
+      : events[0]?.userId;
 
+    // Enrich events with authenticated user context
+    if (authContext.isAuthenticated) {
+      events.forEach((event: any) => {
+        event.userId = authContext.userId;
+        event.userTier = authContext.tier;
+      });
+    }
+
+    // Check tier limits for authenticated users before processing
     if (userId) {
       try {
         await enforceEventLimit(database, userId);

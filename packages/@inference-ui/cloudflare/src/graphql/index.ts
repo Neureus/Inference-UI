@@ -6,6 +6,7 @@
 import { graphql, buildSchema } from 'graphql';
 import { schema, resolvers, AuthService, type APIContext } from '@inference-ui/api';
 import type { Env } from '../types';
+import type { AuthContext } from '../auth/middleware';
 import { createResponse, createErrorResponse } from '../workers';
 import {
   D1DatabaseAdapter,
@@ -21,7 +22,8 @@ const graphqlSchema = buildSchema(schema);
 export async function handleGraphQL(
   request: Request,
   env: Env,
-  _ctx: ExecutionContext
+  _ctx: ExecutionContext,
+  authContext: AuthContext
 ): Promise<Response> {
   if (request.method !== 'POST') {
     return createErrorResponse('Method not allowed. Use POST.', 405);
@@ -39,19 +41,19 @@ export async function handleGraphQL(
       return createErrorResponse('Missing query parameter', 400);
     }
 
-    // Extract auth context from headers
-    const authContext = AuthService.extractAuthContext(request.headers);
+    // Extract additional context from headers (sessionId, userAgent)
+    const headerContext = AuthService.extractAuthContext(request.headers);
 
-    // Build API context with adapters
+    // Build API context with adapters and authenticated user
     const context: APIContext = {
       database: new D1DatabaseAdapter(env.DB),
       analytics: env.ANALYTICS ? new AnalyticsEngineAdapter(env.ANALYTICS) : undefined,
       cache: env.KV ? new KVCacheAdapter(env.KV) : undefined,
       storage: env.STORAGE ? new R2StorageAdapter(env.STORAGE) : undefined,
       ai: env.AI ? new WorkersAIAdapter(env.AI) : undefined,
-      userId: authContext.userId,
-      sessionId: authContext.sessionId,
-      userAgent: authContext.userAgent,
+      userId: authContext.userId, // From API key authentication
+      sessionId: headerContext.sessionId,
+      userAgent: headerContext.userAgent,
     };
 
     // Execute GraphQL query
