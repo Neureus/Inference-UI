@@ -1,29 +1,58 @@
 {
-  "name": "@inference-ui/flows",
+  "name": "inference-ui-flows",
   "version": "0.1.0",
-  "description": "UX flow engine for Liquid UI",
+  "description": "Intelligent UX flow engine for React Native with multi-step wizards, conditional navigation, progress tracking, and analytics integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest --passWithNoTests",
     "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["flows", "ux", "wizard"],
-  "author": "Liquid UI Team",
+  "keywords": [
+    "flows",
+    "ux",
+    "wizard",
+    "react-native",
+    "multi-step",
+    "navigation",
+    "progress",
+    "analytics",
+    "conditional-routing",
+    "state-management"
+  ],
+  "author": "Inference UI Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neureus/Inference-UI.git",
+    "directory": "packages/@inference-ui/flows"
+  },
+  "homepage": "https://inference-ui.dev",
+  "bugs": {
+    "url": "https://github.com/Neureus/Inference-UI/issues"
+  },
   "dependencies": {
-    "@inference-ui/core": "^0.1.0",
-    "@inference-ui/events": "^0.1.0"
+    "inference-ui-core": "^0.1.0",
+    "inference-ui-events": "^0.1.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
-    "react-native": "0.82.0"
+    "react-native": ">=0.70.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
     "typescript": "^5.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

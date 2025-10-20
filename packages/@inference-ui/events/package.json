@@ -1,29 +1,58 @@
 {
-  "name": "@inference-ui/events",
+  "name": "inference-ui-events",
   "version": "0.1.0",
-  "description": "Event tracking and analytics for Liquid UI",
+  "description": "Zero-configuration event tracking and analytics for React Native with automatic capture, local queuing, and Cloudflare Workers integration",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
     "test": "jest --passWithNoTests",
     "lint": "eslint src --ext .ts,.tsx",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
   },
-  "keywords": ["analytics", "events", "tracking"],
-  "author": "Liquid UI Team",
+  "keywords": [
+    "analytics",
+    "events",
+    "tracking",
+    "react-native",
+    "cloudflare",
+    "workers",
+    "privacy-first",
+    "local-storage",
+    "event-capture",
+    "telemetry"
+  ],
+  "author": "Inference UI Team",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Neureus/Inference-UI.git",
+    "directory": "packages/@inference-ui/events"
+  },
+  "homepage": "https://inference-ui.dev",
+  "bugs": {
+    "url": "https://github.com/Neureus/Inference-UI/issues"
+  },
   "dependencies": {
-    "@inference-ui/core": "^0.1.0",
+    "inference-ui-core": "^0.1.0",
     "@react-native-async-storage/async-storage": "^2.2.0"
   },
   "peerDependencies": {
     "react": "^19.0.0",
-    "react-native": "0.82.0"
+    "react-native": ">=0.70.0"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
     "typescript": "^5.8.2"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
