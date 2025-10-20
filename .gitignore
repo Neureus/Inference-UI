@@ -5,9 +5,19 @@ node_modules/
 
 # Build outputs
 dist/
+dist-*/
 build/
 .expo/
 .expo-shared/
+*.tsbuildinfo
+
+# TypeScript compiled outputs (if compiling in src/)
+**/src/**/*.js
+**/src/**/*.d.ts
+**/src/**/*.d.ts.map
+**/src/**/*.js.map
+!**/src/**/*.config.js
+!**/src/**/*.setup.js
 
 # Nx
 .nx/
