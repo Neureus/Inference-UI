@@ -2006,6 +2006,29 @@ npm install inference-ui-core
 - **Smart Placement**: Workers co-located near D1, R2, KV for minimal latency
 - **Deployed**: October 20, 2025
 
+**Authentication & Multi-Tenancy**:
+- **API Key Based**: sk_live_xxx format (production), sk_test_xxx (development)
+- **Tenant Identification**: Every request authenticated with API key → user ID + tier
+- **Multiple Header Formats**: Authorization Bearer, X-API-Key, x-inference-key
+- **Security**: SHA-256 hashed keys, never store raw keys in database
+- **Performance**: KV cache (95% hit rate, <1ms validation), D1 fallback (~50ms)
+- **Key Management**: Create, list, revoke via GraphQL mutations
+- **Tier Enforcement**: Free, Developer, Business, Enterprise limits enforced
+- **Data Isolation**: Each tenant's data isolated by user_id
+- **Usage Tracking**: All events/AI requests tracked per tenant
+- **Expiration Support**: Optional key expiration dates
+- **Key Rotation**: Multiple keys per user, revoke anytime
+
+**How It Works**:
+1. Client SDK includes API key in Authorization header
+2. Main worker validates key (KV cache → D1 database)
+3. Extracts user ID and tier from validated key
+4. Passes user context to service bindings for tenant isolation
+5. Service enforces tier limits and tracks usage per tenant
+6. All data operations scoped to authenticated user
+
+**Documentation**: See `AUTHENTICATION.md` for complete guide
+
 ### npm Package Registry
 **Status**: ✅ All Packages Published
 
